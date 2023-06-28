@@ -59,16 +59,16 @@ public class Trade {
 		return inv;
 	}
 	
-	public Set<ItemStack> GetTradedItems(Player Player) { return GetTradedItems(Player.getUniqueId()); }
-	public Set<ItemStack> GetTradedItems(UUID PlayerUUID)
+	public List<ItemStack> GetTradedItems(Player Player) { return GetTradedItems(Player.getUniqueId()); }
+	public List<ItemStack> GetTradedItems(UUID PlayerUUID)
 	{
 		if(PlayerUUID.equals(uuidPlayer1)) return GetTradedItems(1);
 		else if(PlayerUUID.equals(uuidPlayer2)) return GetTradedItems(2);
-		return new HashSet<>();
+		return new ArrayList<>();
 	}
-	public Set<ItemStack> GetTradedItems(int Player)
+	public List<ItemStack> GetTradedItems(int Player)
 	{
-		Set<ItemStack> Items = new HashSet<>();
+		List<ItemStack> Items = new ArrayList<>();
 		Inventory inv = getInventoryOf(Player);
 		// Fill up
 		// From 2nd row to max, and leave the last 2 rows + of the 3rd to last row the 2nd half and middle divider
@@ -231,6 +231,12 @@ public class Trade {
 	
 	public void CancelTrade(UUID PlayerWhoClosedTheInventory)
 	{
+		if(SchedulerRunning)
+		{
+			// Cancel Timer
+			Bukkit.getScheduler().cancelTask(ConfirmScheduler);
+			SchedulerRunning = false;
+		}
 		CancelForPlayer(uuidPlayer1, PlayerWhoClosedTheInventory.equals(uuidPlayer1));
 		CancelForPlayer(uuidPlayer2, PlayerWhoClosedTheInventory.equals(uuidPlayer2));
 	}
@@ -240,6 +246,7 @@ public class Trade {
 		TradeInventoryEventHandler.Trades.remove(uuid);
 		if(p1 != null)
 		{
+			PlaySound(uuid, Sound.ENTITY_WITHER_HURT, 0.8f);
 			if(!ClosedTheInventory /*p1.getOpenInventory().getTitle().startsWith(TitlePrefix)*/) p1.closeInventory();	// Otherwise this is invoked recursively
 			List<ItemStack> LeftOvers = new ArrayList<>();
 			for(final ItemStack i : GetTradedItems(uuid)) {
@@ -326,7 +333,9 @@ public class Trade {
 		TradeInventoryEventHandler.Trades.remove(uuidPlayer1);
 		TradeInventoryEventHandler.Trades.remove(uuidPlayer2);
 		if(pl1 != null && !TradeResultPlayer1.isEmpty()) pl1.openInventory(TradeResultPlayer1);
+		else if(pl1 != null) pl1.closeInventory();
 		if(pl2 != null && !TradeResultPlayer2.isEmpty()) pl2.openInventory(TradeResultPlayer2);
+		else if(pl2 != null) pl2.closeInventory();
 	}
 
 }

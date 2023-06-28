@@ -29,10 +29,6 @@ public final class TradingMain extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new TradeInventoryEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new TradeSettingsInventory(), this);
 		this.getCommand("trade").setExecutor(new TradeCommand());
-		ItemStack i = new ItemStack(Material.RED_STAINED_GLASS_PANE);
-		ItemMeta meta = i.getItemMeta();
-		meta.setLore(Collections.singletonList("§cClick to rescind offer"));
-		i.setItemMeta(meta);
 	}
 	
 	@Override

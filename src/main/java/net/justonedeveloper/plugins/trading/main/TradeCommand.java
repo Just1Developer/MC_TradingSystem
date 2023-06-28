@@ -123,6 +123,7 @@ public class TradeCommand implements CommandExecutor {
 					pl.sendMessage("§e" + p.getName() + " §aaccepted §eyour trade request");
 					p.sendMessage("§eYou §aaccepted §ethe trade request from " + pl.getName());
 					new Trade(pl, p);
+					return true;
 				}
 				
 				pl.sendMessage("§c" + p.getName() + " §4declined §cyour trade request");
