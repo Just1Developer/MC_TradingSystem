@@ -1,0 +1,9 @@
+name: TradingPlugin
+version: '0.9-ALPHA'
+main: net.justonedeveloper.plugins.trading.main.TradingMain
+api-version: 1.16
+prefix: JustOneDeveloper's Trading System
+authors: [ JustOneDeveloper ]
+description: A trading plugin for spigot
+commands:
+  trade:
