@@ -1,5 +1,8 @@
 package net.justonedeveloper.plugins.trading.main;
 
+import net.justonedeveloper.plugins.trading.language.Language;
+import net.justonedeveloper.plugins.trading.language.LanguageInventory;
+import net.justonedeveloper.plugins.trading.language.Phrase;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -20,10 +23,7 @@ public class Trade {
 	public static final int[] OwnConfirmSlots = { 36, 37, 38, 39 };
 	public static final int[] OtherConfirmSlots = { 41, 42, 43, 44 };
 	
-	public static final String TitlePrefix = "§8Trade with ";
-	public static final String TitlePrefixTradeConclusion = "§8New Items: Trade with ";
-	
-	public static ItemStack EmptyStack, ConfirmRedOwn, ConfirmGreenOwn, ConfirmRedOther, ConfirmGreenOther, ConfirmLoadingBar;
+	public static ItemStack EmptyStack;//, ConfirmRedOwn, ConfirmGreenOwn, ConfirmRedOther, ConfirmGreenOther, ConfirmLoadingBar;
 	
 	private int ConfirmScheduler, ConfirmStage = 0;
 	private boolean SchedulerRunning = false;
@@ -36,21 +36,21 @@ public class Trade {
 		TradeCommand.clearPendingTrades(uuidPlayer2);
 		TradeInventoryEventHandler.Trades.put(uuidPlayer1, this);
 		TradeInventoryEventHandler.Trades.put(uuidPlayer2, this);
-		TradeInventoryPlayer1 = GenerateTradeInventory(Player2.getName());
-		TradeInventoryPlayer2 = GenerateTradeInventory(Player1.getName());
+		TradeInventoryPlayer1 = GenerateTradeInventory(Player1, Player2.getName());
+		TradeInventoryPlayer2 = GenerateTradeInventory(Player2, Player1.getName());
 		Player1.openInventory(TradeInventoryPlayer1);
 		Player2.openInventory(TradeInventoryPlayer2);
 	}
 	
-	public static Inventory GenerateTradeInventory(String OtherTraderName)
+	public static Inventory GenerateTradeInventory(Player Trader, String OtherTraderName)
 	{
-		Inventory inv = Bukkit.createInventory(null, 54, TitlePrefix + OtherTraderName);
-		ItemStack red = ConfirmRedOwn;
+		Inventory inv = Bukkit.createInventory(null, 54, Language.get(Trader, Phrase.TRADE_INVENTORY_TITLE, OtherTraderName));
+		ItemStack red = TradingMain.getConfirmRedOwn(Trader);
 		for(int i = 0; i < 9; ++i)
 		{
 			inv.setItem(i, EmptyStack);
 			inv.setItem(i + 36, red);
-			if(i == 4) red = ConfirmRedOther;
+			if(i == 4) red = TradingMain.getConfirmRedOther(Trader);;
 		}
 		for(int i = 0; i < 6; ++i)
 		{
@@ -207,8 +207,8 @@ public class Trade {
 				return;
 			}
 			
-			TradeInventoryPlayer1.setItem(45 + ConfirmStage, ConfirmLoadingBar);
-			TradeInventoryPlayer2.setItem(45 + ConfirmStage, ConfirmLoadingBar);
+			TradeInventoryPlayer1.setItem(45 + ConfirmStage, TradingMain.getConfirmLoadingBar(Bukkit.getPlayer(uuidPlayer1)));
+			TradeInventoryPlayer2.setItem(45 + ConfirmStage, TradingMain.getConfirmLoadingBar(Bukkit.getPlayer(uuidPlayer2)));
 			PlaySound(uuidPlayer1);
 			PlaySound(uuidPlayer2);
 			ConfirmStage++;
@@ -237,8 +237,8 @@ public class Trade {
 			Bukkit.getScheduler().cancelTask(ConfirmScheduler);
 			SchedulerRunning = false;
 		}
-		CancelForPlayer(uuidPlayer1, PlayerWhoClosedTheInventory.equals(uuidPlayer1));
-		CancelForPlayer(uuidPlayer2, PlayerWhoClosedTheInventory.equals(uuidPlayer2));
+		CancelForPlayer(uuidPlayer1, PlayerWhoClosedTheInventory != null && PlayerWhoClosedTheInventory.equals(uuidPlayer1));
+		CancelForPlayer(uuidPlayer2, PlayerWhoClosedTheInventory != null && PlayerWhoClosedTheInventory.equals(uuidPlayer2));
 	}
 	private void CancelForPlayer(UUID uuid, boolean ClosedTheInventory)
 	{
@@ -247,7 +247,7 @@ public class Trade {
 		if(p1 != null)
 		{
 			PlaySound(uuid, Sound.ENTITY_WITHER_HURT, 0.8f);
-			if(!ClosedTheInventory /*p1.getOpenInventory().getTitle().startsWith(TitlePrefix)*/) p1.closeInventory();	// Otherwise this is invoked recursively
+			if(!ClosedTheInventory) p1.closeInventory();	// Otherwise this is invoked recursively
 			List<ItemStack> LeftOvers = new ArrayList<>();
 			for(final ItemStack i : GetTradedItems(uuid)) {
 				LeftOvers.addAll(p1.getInventory().addItem(i).values());
@@ -256,7 +256,7 @@ public class Trade {
 			{
 				p1.getWorld().dropItemNaturally(p1.getLocation(), drops);
 			}
-			p1.sendMessage("§cThe trade has been canceled.");
+			p1.sendMessage(Language.get(p1, Phrase.TRADE_INVENTORY_CLOSE_CANCELLED_MESSAGE));
 		}
 	}
 	
@@ -264,16 +264,17 @@ public class Trade {
 	public void ToggleTradeConfirm(UUID Player)
 	{
 		ItemStack own, other;
+		UUID Other = Player.equals(uuidPlayer1) ? uuidPlayer2 : uuidPlayer1;
 		
 		if(IsConfirmed(Player))
 		{
-			own = ConfirmRedOwn;
-			other = ConfirmRedOther;
+			own = TradingMain.getConfirmRedOwn(Player);
+			other = TradingMain.getConfirmRedOther(Other);
 		}
 		else
 		{
-			own = ConfirmGreenOwn;
-			other = ConfirmGreenOther;
+			own = TradingMain.getConfirmGreenOwn(Player);
+			other = TradingMain.getConfirmGreenOther(Other);
 		}
 		
 		Inventory[] inventories = getInventoriesOf(Player);
@@ -286,7 +287,7 @@ public class Trade {
 			inventories[1].setItem(slot, other);
 		}
 		
-		if(own.equals(ConfirmRedOwn) && SchedulerRunning)
+		if(own.getType().equals(Material.RED_STAINED_GLASS_PANE) && SchedulerRunning)
 		{
 			// Cancel Timer
 			PlaySound(uuidPlayer1, Sound.ENTITY_WITHER_HURT, 0.8f);
@@ -311,7 +312,11 @@ public class Trade {
 	public boolean IsConfirmed(Player Player) { return IsConfirmed(Player.getUniqueId()); }
 	public boolean IsConfirmed(UUID Player)
 	{
-		return Objects.equals(getInventoryOf(Player).getItem(OwnConfirmSlots[0]), ConfirmGreenOwn);
+		Inventory inv = getInventoryOf(Player);
+		if(inv == null) return SchedulerRunning;
+		ItemStack it = inv.getItem(OwnConfirmSlots[0]);
+		if(it == null) return SchedulerRunning;
+		return SchedulerRunning || it.getType() == Material.LIME_STAINED_GLASS_PANE;
 	}
 	
 	public void PerformTrade()
@@ -320,8 +325,8 @@ public class Trade {
 		Bukkit.getScheduler().cancelTask(ConfirmScheduler);
 		
 		Player pl1 = Bukkit.getPlayer(uuidPlayer1), pl2 = Bukkit.getPlayer(uuidPlayer2);
-		Inventory TradeResultPlayer1 = Bukkit.createInventory(null, 27, TitlePrefixTradeConclusion + (pl2 != null ? pl2.getName() : "§c[UNKNOWN]")),
-				TradeResultPlayer2 = Bukkit.createInventory(null, 27, TitlePrefixTradeConclusion + (pl1 != null ? pl1.getName() : "§c[UNKNOWN]"));
+		Inventory TradeResultPlayer1 = Bukkit.createInventory(null, 27, Language.get(pl1, Phrase.TRADE_INVENTORY_CONCLUSION_TITLE, (pl2 != null ? pl2.getName() : Language.get(pl1, Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME)))),
+				TradeResultPlayer2 = Bukkit.createInventory(null, 27, Language.get(pl2, Phrase.TRADE_INVENTORY_CONCLUSION_TITLE, (pl1 != null ? pl1.getName() : Language.get(pl2, Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME))));
 		for(ItemStack item : GetTradedItems(2))
 		{
 			TradeResultPlayer1.addItem(item);

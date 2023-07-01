@@ -1,9 +1,9 @@
 package net.justonedeveloper.plugins.trading.main;
 
-import org.bukkit.Bukkit;
+import net.justonedeveloper.plugins.trading.language.Language;
+import net.justonedeveloper.plugins.trading.language.Phrase;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
@@ -14,12 +14,14 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class TradeInventoryEventHandler implements Listener {
-
-	
 	
 	public static void CancelAllTrades()
 	{
-	
+		while(!Trades.isEmpty())
+		{
+			// Just get a trade and cancel it. In the end, all trades will have been cancelled
+			Trades.values().toArray(new Trade[0])[0].CancelTrade(null);
+		}
 	}
 	
 	public static HashMap<UUID, Trade> Trades = new HashMap<>();
@@ -105,7 +107,7 @@ public class TradeInventoryEventHandler implements Listener {
 		
 		// Normal Click
 		assert e.getClickedInventory() != null;
-		if(!e.getClickedInventory().equals(e.getInventory())) return;
+		if(!e.getClickedInventory().equals(e.getInventory())) return;													// <-- Todo is this working as intended?
 		
 		// Clicked on Trade Inventory, now Handle
 		if(col > 3 || row == 0 || row >= 4 || HasConfirmed)
@@ -138,15 +140,21 @@ public class TradeInventoryEventHandler implements Listener {
 			//e.setResult(Event.Result.DENY);	// This lets the dragging continue but picks everything back up when the player lets go
 			break;
 		}
+		
+		UUID uuid = e.getWhoClicked().getUniqueId();
+		Trade trade = Trades.get(uuid);
+		if(trade.IsConfirmed(uuid))
+		{
+			e.setCancelled(true);
+			return;
+		}
+		
 		for(int slot : e.getRawSlots())
 		{
 			int row = slot / 9;
 			int col = slot % 9;
 			if(col > 3 || row == 0 || row >= 4) continue;	// Not valid area
-			UUID uuid = e.getWhoClicked().getUniqueId();
-			Trade trade = Trades.get(uuid);
-			if(trade.IsConfirmed(uuid)) e.setCancelled(true);
-			else trade.SyncSlotFor(e.getWhoClicked().getUniqueId(), slot);
+			trade.SyncSlotFor(e.getWhoClicked().getUniqueId(), slot);
 		}
 	}
 	
@@ -159,7 +167,7 @@ public class TradeInventoryEventHandler implements Listener {
 			Trades.get(e.getPlayer().getUniqueId()).CancelTrade(e.getPlayer().getUniqueId());
 			Runtime.getRuntime().gc();
 		}
-		else if(e.getView().getTitle().startsWith(Trade.TitlePrefixTradeConclusion))
+		else if(e.getView().getTitle().startsWith(Language.get(e.getPlayer().getUniqueId(), Phrase.TRADE_INVENTORY_CONCLUSION_TITLE)))
 		{
 			Player p = (Player) e.getPlayer();
 			if(e.getInventory().isEmpty()) return;

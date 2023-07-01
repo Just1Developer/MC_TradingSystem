@@ -1,5 +1,7 @@
 package net.justonedeveloper.plugins.trading.main;
 
+import net.justonedeveloper.plugins.trading.language.Language;
+import net.justonedeveloper.plugins.trading.language.Phrase;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -22,14 +24,14 @@ public class TradeCommand implements CommandExecutor {
 	{
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage("§cThis command is for players only!");
+			sender.sendMessage(Language.getPhrase(Phrase.ERROR_SENDER_NOT_PLAYER));
 			return false;
 		}
 		Player p = (Player) sender;
 		UUID uuid = p.getUniqueId();
 		if(args.length > 2)
 		{
-			sender.sendMessage("§cError: Unknown usage of /trade. Instead, try:\n§e/trade §7[player] §8or §e/trade <accept, decline, cancel> §7[player]");
+			sender.sendMessage(Language.get(p, Phrase.ERROR_TRADE_COMMAND_HELP));
 			return false;
 		}
 		if(args.length == 1)
@@ -42,7 +44,7 @@ public class TradeCommand implements CommandExecutor {
 			}
 			if(pl.getName().equals(p.getName()))
 			{
-				sender.sendMessage("§cYou cannot trade with yourself.");
+				sender.sendMessage(Language.get(p, Phrase.TRADE_DENY_WITH_SELF));
 				return false;
 			}
 			UUID uuid2 = pl.getUniqueId();
@@ -50,38 +52,38 @@ public class TradeCommand implements CommandExecutor {
 			// We also need to check if there is a pending trade request between these two players:
 			if(TradeRequests.containsKey(uuid) && TradeRequests.get(uuid).contains(uuid2))
 			{
-				p.sendMessage("§cYou already have a pending trade offer to this person.");
+				p.sendMessage(Language.get(p, Phrase.TRADE_DENY_ALREADY_PENDING));
 				return true;
 			}
 			
 			// Merge trade offers
 			if(TradeRequests.containsKey(uuid2) && TradeRequests.get(uuid2).contains(uuid))
 			{
-				pl.sendMessage("§e" + p.getName() + " §aaccepted §eyour trade request");
-				p.sendMessage("§eYou §aaccepted §ethe trade request from " + pl.getName());
+				pl.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT));
+				p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED));
 				new Trade(pl, p);
 				return true;
 			}
 			
 			TextComponent msgAccept = new TextComponent();
-			msgAccept.setText("§a§l[ACCEPT TRADE]");
-			msgAccept.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§8Click to accept trade")));
+			msgAccept.setText("§a§l[" + Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_ACCEPT) + "]");
+			msgAccept.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT))));
 			msgAccept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade accept " + p.getName()));
 			
 			TextComponent msgDecline = new TextComponent();
-			msgDecline.setText("§4§l[DECLINE TRADE]");
-			msgDecline.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§8Click to decline trade")));
+			msgDecline.setText("§4§l[" + Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_DECLINE) + "]");
+			msgDecline.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_RECEIVED_MESSAGE_HOVER_DECLINE))));
 			msgDecline.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade decline " + p.getName()));
 			
 			TextComponent msgCancel = new TextComponent();
-			msgCancel.setText("§c§l[Take back]");
-			msgCancel.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§aClick to rescind trade offer")));
+			msgCancel.setText("§c§l[" + Language.get(pl, Phrase.TRADE_SENT_MESSAGE_CANCEL) + "]");
+			msgCancel.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_SENT_MESSAGE_HOVER_CANCEL))));
 			msgCancel.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade cancel " + pl.getName()));
 			
-			pl.sendMessage("§eYou have been invited to trade with §7" + p.getName() + "§e. You have §730 §eseconds to accept.");
+			pl.sendMessage(Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_BASE, p.getName()));
 			pl.spigot().sendMessage(new TextComponent("          "), msgAccept, new TextComponent("     "), msgDecline);
 			
-			p.sendMessage("§eYou invited §7" + pl.getName() + " §eto trade. They have §730 §eseconds to accept.");
+			p.sendMessage(Language.get(p, Phrase.TRADE_SENT_MESSAGE_BASE, pl.getName()));
 			p.spigot().sendMessage(new TextComponent("          "), msgCancel);
 			
 			addTradeRequest(p, pl);
@@ -92,7 +94,7 @@ public class TradeCommand implements CommandExecutor {
 			String keyword = args[0].toLowerCase();
 			if(!keyword.equals("accept") && !keyword.equals("decline") && !keyword.equals("cancel") && !keyword.equals("rescind") && !keyword.equals("takeback"))
 			{
-				sender.sendMessage("§cError: Unknown usage of /trade. Instead, try:\n§e/trade §7[player] §8or §e/trade <accept, decline, cancel> §7[player]");
+				sender.sendMessage(Language.get(p, Phrase.ERROR_TRADE_COMMAND_HELP));
 				return false;
 			}
 			Player pl = Bukkit.getPlayer(args[1]);
@@ -103,7 +105,7 @@ public class TradeCommand implements CommandExecutor {
 			}
 			if(pl.getName().equals(p.getName()))
 			{
-				sender.sendMessage("§cYou cannot trade with yourself.");
+				sender.sendMessage(Language.get(p, Phrase.TRADE_DENY_WITH_SELF));
 				return false;
 			}
 			UUID uuid2 = pl.getUniqueId();
@@ -113,34 +115,34 @@ public class TradeCommand implements CommandExecutor {
 				// We are in the list of someone else
 				if(!TradeRequests.containsKey(uuid2) || !TradeRequests.get(uuid2).contains(uuid))
 				{
-					p.sendMessage("§cYou have no pending trade offer from " + pl.getName());
+					p.sendMessage(Language.get(p, Phrase.TRADE_DENY_TRY_ACCEPT_NO_OFFER));
 					return false;
 				}
 				// Since action is being taken and it exists, lets remove it
 				TradeRequests.get(uuid2).remove(uuid);
 				if(keyword.equals("accept"))
 				{
-					pl.sendMessage("§e" + p.getName() + " §aaccepted §eyour trade request");
-					p.sendMessage("§eYou §aaccepted §ethe trade request from " + pl.getName());
+					pl.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT));
+					p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED));
 					new Trade(pl, p);
 					return true;
 				}
 				
-				pl.sendMessage("§c" + p.getName() + " §4declined §cyour trade request");
-				p.sendMessage("§cYou §4declined §cthe trade request from " + pl.getName());
+				pl.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_SENT));
+				p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_RECEIVED));
 				return true;
 			}
 			
 			// We are in the list of someone else
 			if(!TradeRequests.containsKey(uuid) || !TradeRequests.get(uuid).contains(uuid2))
 			{
-				p.sendMessage("§cYou have no pending trade offer to " + pl.getName());
+				p.sendMessage(Language.get(p, Phrase.TRADE_DENY_TRY_CANCEL_NO_OFFER));
 				return false;
 			}
 			TradeRequests.get(uuid).remove(uuid2);
-			p.sendMessage("§eYou §4cancelled §ethe trade request to " + pl.getName());
+			p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_CANCELLED_SUCCESS));
 		}
-		sender.sendMessage("§eOpening Trading Settings..");
+		p.sendMessage(Language.get(p, Phrase.TRADE_INVENTORY_MESSAGE_OPENING_SETTINGS_INVENTORY));
 		TradeSettingsInventory.OpenInventory(p);
 		return false;
 	}
