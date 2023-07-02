@@ -1,6 +1,8 @@
 package net.justonedeveloper.plugins.trading.language;
 
 import net.justonedeveloper.plugins.trading.main.TradingMain;
+import net.justonedeveloper.plugins.trading.settings.TradeSettingsInventory;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
@@ -8,22 +10,26 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class Language {
 	
 	static File folder = new File(TradingMain.main.getDataFolder(), "Languages/");
 	public static final String DefaultLanguage = "en-US";
-	private static final HashMap<String, Language> Languages = new HashMap<>();
-	private static final HashMap<UUID, String> LanguagesPerPlayer = new HashMap<>();
+	public static final List<String> LanguageIDs = new ArrayList<>();
+	public static final HashMap<String, Language> Languages = new HashMap<>();
+	// This is just for 'faster' access. Might remove / rework later
+	//private static final HashMap<UUID, String> LanguagesPerPlayer = new HashMap<>();
 	
 	public static void Init()
 	{
 		// Import all languages
-		if(!folder.exists())
+		if(!new File(folder, DefaultLanguage + ".yml").exists())
 		{
-			new Language("en-EN");
+			new Language(DefaultLanguage, "English");
 		}
 		File[] files = folder.listFiles();
 		if(files == null) return;
@@ -34,17 +40,42 @@ public class Language {
 		}
 	}
 	
-	public static Language getLanguage(String code)
+	public static boolean exists(String languageCode)
 	{
-		if(Languages.containsKey(code)) return Languages.get(code);
-		return Languages.get(DefaultLanguage);
+		return LanguageIDs.contains(languageCode);
 	}
 	
-	public static void CreateLanguageFile(String code)
+	public static int languageAmount()
+	{
+		return LanguageIDs.size();
+	}
+	
+	public static String get(int index)
+	{
+		return LanguageIDs.get(index);
+	}
+	
+	public static Language getLanguage(String code)
+	{
+		return Languages.getOrDefault(code, Languages.get(DefaultLanguage));
+	}
+	
+	public static Language getLanguage(Player p) { return getLanguage(p.getUniqueId()); }
+	public static Language getLanguage(UUID uuid)
+	{
+		return getLanguage(TradeSettingsInventory.getLanguage(uuid));
+		// if(LanguagesPerPlayer.containsKey(uuid)) return getLanguage(LanguagesPerPlayer.get(uuid));
+		// return Languages.get(DefaultLanguage);
+	}
+	
+	public static void CreateLanguageFile(String code, String LanguageName)
 	{
 		File f = new File(TradingMain.main.getDataFolder(), "Languages/" + code + ".yml");
 		if(f.exists()) return;
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
+		cfg.set("Language.LanguageName", LanguageName);
+		cfg.set("Language.ItemMaterial", Material.DARK_OAK_SIGN.toString());
+		if(code.equals(DefaultLanguage)) cfg.set(Phrase.ERROR_LANGUAGE_NOT_EXIST.toString(), "§cYour selected language (%langCode%) does not seems to exist anymore. Your language has been reset to english.");
 		cfg.set(Phrase.ERROR_PLAYER_NOT_ONLINE.toString(), "§cCould not find player §7%name%§c.");
 		cfg.set(Phrase.ERROR_SENDER_NOT_PLAYER.toString(), "§cThis command is for players only!");
 		cfg.set(Phrase.ERROR_TRADE_COMMAND_HELP.toString(), "§cError: Unknown usage of /trade. Instead, try:\n§e/trade §7[player] §8or §e/trade <accept, decline, cancel> §7[player]");
@@ -61,10 +92,10 @@ public class Language {
 		cfg.set(Phrase.ITEM_NAME_PARTNER_CONFIRMED.toString(), "§a§lPartner has confirmed Trade");
 		cfg.set(Phrase.ITEM_NAME_PROCESSING_TRADE.toString(), "§b§lTrading in progress...");
 		// Trade Request Messages
-		cfg.set(Phrase.TRADE_SENT_MESSAGE_BASE.toString(), "§eYou invited §7%name% §eto trade. They have §730 §eseconds to accept.");
+		cfg.set(Phrase.TRADE_SENT_MESSAGE_BASE.toString(), "§eYou invited §7%name% §eto trade. They have §7%seconds% §eseconds to accept.");
 		cfg.set(Phrase.TRADE_SENT_MESSAGE_CANCEL.toString(), "TAKE BACK");
 		cfg.set(Phrase.TRADE_SENT_MESSAGE_HOVER_CANCEL.toString(), "§aClick to rescind trade offer");
-		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_BASE.toString(), "§eYou have been invited to trade with §7%name%§e. You have §730 §eseconds to accept.");
+		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_BASE.toString(), "§eYou have been invited to trade with §7%name%§e. You have §7%seconds% §eseconds to accept.");
 		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_ACCEPT.toString(), "ACCEPT TRADE");
 		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_DECLINE.toString(), "DECLINE TRADE");
 		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT.toString(), "§8Click to accept trade");
@@ -82,6 +113,26 @@ public class Language {
 		cfg.set(Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME.toString(), "§c[UNKNOWN]");
 		// Settings
 		cfg.set(Phrase.TRADE_INVENTORY_MESSAGE_OPENING_SETTINGS_INVENTORY.toString(), "§eOpening Trading Settings..");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_TITLE.toString(), "§8Trade Settings: %name%");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME.toString(), "§a§lEnabled");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_LORE.toString(), "§8Click to disable");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME.toString(), "§c§lDisabled");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_LORE.toString(), "§8Click to enable");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_NAME.toString(), "§8Inactive");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_LORE.toString(), "§8Click to enable");
+		// Settings inventory
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_ACCEPT_NAME.toString(), "§aAuto-Accept Trades");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME.toString(), "§eTrade on Request");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_DECLINE_NAME.toString(), "§cAuto-Decline Trades");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME.toString(), "§dAuto-Collect Items");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE.toString(), "§8Items are automatically added to\n§8your inventory post-trade.");
+		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_SET_LANGUAGE_NAME.toString(), "§eSet Language");
+		// Language Inventory
+		cfg.set(Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE.toString(), "§8Language Settings: %name%");
+		cfg.set(Phrase.TRADE_LANG_SETTINGS_BACK_TO_SETTINGS_NAME.toString(), "§cBack to Settings");
+		cfg.set(Phrase.TRADE_LANG_SETTINGS_ADMIN_EDIT_LANGUAGE_NAME.toString(), "§eEdit Language");
+		cfg.set(Phrase.TRADE_LANG_SETTINGS_NEXT_PAGE_NAME.toString(), "§7Next Page");
+		cfg.set(Phrase.TRADE_LANG_SETTINGS_PREV_PAGE_NAME.toString(), "§7Previous Page");
 		
 		try {
 			cfg.save(f);
@@ -102,58 +153,73 @@ public class Language {
 	public static String get(UUID uuid, Phrase phrase)
 	{
 		if (uuid == null) return getPhrase(phrase);
+		return getLanguage(TradeSettingsInventory.getLanguage(uuid)).get(phrase);
+		/*
 		if (LanguagesPerPlayer.containsKey(uuid)) return getLanguage(LanguagesPerPlayer.get(uuid)).get(phrase);
 		LanguagesPerPlayer.put(uuid, DefaultLanguage);
 		return getPhrase(phrase);
+		 */
 	}
 	public static String get(HumanEntity p, Phrase phrase, String MentionedPlayerName) { return p == null ? getPhrase(phrase, MentionedPlayerName) : get(p.getUniqueId(), phrase, MentionedPlayerName); }
 	public static String get(UUID uuid, Phrase phrase, String MentionedPlayerName)
 	{
 		if (uuid == null) return getPhrase(phrase, MentionedPlayerName);
+		return getLanguage(TradeSettingsInventory.getLanguage(uuid)).get(phrase, MentionedPlayerName);
+		/*
 		if (LanguagesPerPlayer.containsKey(uuid)) return getLanguage(LanguagesPerPlayer.get(uuid)).get(phrase, MentionedPlayerName);
 		LanguagesPerPlayer.put(uuid, DefaultLanguage);
 		return getPhrase(phrase, MentionedPlayerName);
-	}
-	
-	public static void setPlayerLanguage(UUID Player, String LanguageID)
-	{
-		LanguagesPerPlayer.put(Player, LanguageID);
-		// Todo perhaps update UI?
+		 */
 	}
 	
 	// Language Class
 	
+	public String LanguageCode;
+	public String LanguageName;
+	public Material ItemMaterial;
 	private HashMap<Phrase, String> Dictionary;
 	
 	public Language(String LanguageCode)
 	{
-		if(Languages.containsKey(LanguageCode)) return;
+		this(LanguageCode, "Unknown");
+	}
+	public Language(String LanguageCode, String LanguageName)
+	{
+		this.LanguageCode = LanguageCode;
+		if(LanguageIDs.contains(LanguageCode)) return;
 		Languages.put(LanguageCode, this);
-		importLang(LanguageCode);
+		LanguageIDs.add(LanguageCode);
+		Dictionary = new HashMap<>();
+		importLang(LanguageCode, LanguageName);
 	}
 	
-	private void importLang(String code)
+	private void importLang(String code, String LanguageName)
 	{
 		File f = new File(folder,  code + ".yml");
 		if(!f.exists())
 		{
 			// Create Default Language File
-			CreateLanguageFile(code);
+			CreateLanguageFile(code, LanguageName);
 		}
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
 		for (Phrase phrase : Phrase.values())
 		{
 			Dictionary.put(phrase, cfg.getString(phrase.toString()));
 		}
+		this.LanguageName = cfg.getString("Language.LanguageName");
+		this.ItemMaterial = Material.valueOf(cfg.getString("Language.ItemMaterial"));
+		if(this.LanguageName == null) this.LanguageName = LanguageName;
 	}
 	
 	public String get(Phrase Phrase)
 	{
-		return Dictionary.getOrDefault(Phrase, getLanguage(DefaultLanguage).get(Phrase));
+		if(!LanguageCode.equals(DefaultLanguage)) return Dictionary.getOrDefault(Phrase, getLanguage(DefaultLanguage).get(Phrase));
+		else return Dictionary.getOrDefault(Phrase, "§cunknown");
 	}
 	public String get(Phrase Phrase, String MentionedPlayerName)
 	{
-		return Dictionary.getOrDefault(Phrase, getLanguage(DefaultLanguage).get(Phrase)).replace("%name%", MentionedPlayerName);
+		if(!LanguageCode.equals(DefaultLanguage)) return Dictionary.getOrDefault(Phrase, getLanguage(DefaultLanguage).get(Phrase)).replace("%name%", MentionedPlayerName);
+		else return Dictionary.getOrDefault(Phrase, "§cunknown").replace("%name%", MentionedPlayerName);
 	}
 	
 }

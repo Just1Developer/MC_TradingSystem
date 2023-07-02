@@ -2,6 +2,7 @@ package net.justonedeveloper.plugins.trading.main;
 
 import net.justonedeveloper.plugins.trading.language.Language;
 import net.justonedeveloper.plugins.trading.language.Phrase;
+import net.justonedeveloper.plugins.trading.settings.TradeSettingsInventory;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -66,24 +67,25 @@ public class TradeCommand implements CommandExecutor {
 			}
 			
 			TextComponent msgAccept = new TextComponent();
-			msgAccept.setText("§a§l[" + Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_ACCEPT) + "]");
+			msgAccept.setText("§a§l[" + Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_ACCEPT) + "§a§l]");
 			msgAccept.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT))));
 			msgAccept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade accept " + p.getName()));
 			
 			TextComponent msgDecline = new TextComponent();
-			msgDecline.setText("§4§l[" + Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_DECLINE) + "]");
+			msgDecline.setText("§4§l[" + Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_DECLINE) + "§4§l]");
 			msgDecline.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_RECEIVED_MESSAGE_HOVER_DECLINE))));
 			msgDecline.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade decline " + p.getName()));
 			
 			TextComponent msgCancel = new TextComponent();
-			msgCancel.setText("§c§l[" + Language.get(pl, Phrase.TRADE_SENT_MESSAGE_CANCEL) + "]");
+			msgCancel.setText("§c§l[" + Language.get(pl, Phrase.TRADE_SENT_MESSAGE_CANCEL) + "§c§l]");
 			msgCancel.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_SENT_MESSAGE_HOVER_CANCEL))));
 			msgCancel.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade cancel " + pl.getName()));
 			
-			pl.sendMessage(Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_BASE, p.getName()));
+			int tradeRequestTimeS = TradeRequestTimeMS / 1000;
+			pl.sendMessage(Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_BASE, p.getName()).replace("%seconds%", "" + tradeRequestTimeS));
 			pl.spigot().sendMessage(new TextComponent("          "), msgAccept, new TextComponent("     "), msgDecline);
 			
-			p.sendMessage(Language.get(p, Phrase.TRADE_SENT_MESSAGE_BASE, pl.getName()));
+			p.sendMessage(Language.get(p, Phrase.TRADE_SENT_MESSAGE_BASE, pl.getName()).replace("%seconds%", "" + tradeRequestTimeS));
 			p.spigot().sendMessage(new TextComponent("          "), msgCancel);
 			
 			addTradeRequest(p, pl);

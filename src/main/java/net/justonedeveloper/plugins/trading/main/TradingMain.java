@@ -1,7 +1,9 @@
 package net.justonedeveloper.plugins.trading.main;
 
 import net.justonedeveloper.plugins.trading.language.Language;
+import net.justonedeveloper.plugins.trading.language.LanguageInventory;
 import net.justonedeveloper.plugins.trading.language.Phrase;
+import net.justonedeveloper.plugins.trading.settings.TradeSettingsInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -29,6 +31,7 @@ public final class TradingMain extends JavaPlugin {
 		// trade command, setting page with privacy and 2fa/double check like in Rocket League
 		Bukkit.getPluginManager().registerEvents(new TradeInventoryEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new TradeSettingsInventory(), this);
+		Bukkit.getPluginManager().registerEvents(new LanguageInventory(), this);
 		this.getCommand("trade").setExecutor(new TradeCommand());
 	}
 	
