@@ -169,7 +169,7 @@ public class TradeInventoryEventHandler implements Listener {
 			Trades.get(e.getPlayer().getUniqueId()).CancelTrade(e.getPlayer().getUniqueId());
 			Runtime.getRuntime().gc();
 		}
-		else if(e.getView().getTitle().startsWith(Language.get(e.getPlayer().getUniqueId(), Phrase.TRADE_INVENTORY_CONCLUSION_TITLE)))
+		else if(e.getView().getTitle().startsWith(Language.get(e.getPlayer().getUniqueId(), Phrase.TRADE_INVENTORY_CONCLUSION_TITLE).replace("%name%", "")))
 		{
 			Player p = (Player) e.getPlayer();
 			if(e.getInventory().isEmpty()) return;

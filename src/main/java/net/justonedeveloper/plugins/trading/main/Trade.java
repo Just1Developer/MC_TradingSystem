@@ -345,15 +345,16 @@ public class Trade {
 			{
 				Inventory i2 = Bukkit.createInventory(null, 27, TitlePlayer1);
 				List<ItemStack> LeftOvers = new ArrayList<>();
-				for(final ItemStack i : TradeResultPlayer1.getContents()) {
+				for(ItemStack i : TradeResultPlayer1.getContents()) {
 					if(i == null) continue;
 					LeftOvers.addAll(pl1.getInventory().addItem(i).values());
 				}
-				for(final ItemStack drops : LeftOvers)
+				for(ItemStack drops : LeftOvers)
 				{
 					i2.addItem(drops);
 				}
 				if(!i2.isEmpty()) pl1.openInventory(i2);
+				else pl1.closeInventory();
 			}
 			else
 			{
@@ -367,15 +368,16 @@ public class Trade {
 			{
 				Inventory i2 = Bukkit.createInventory(null, 27, TitlePlayer2);
 				List<ItemStack> LeftOvers = new ArrayList<>();
-				for(final ItemStack i : TradeResultPlayer1.getContents()) {
+				for(ItemStack i : TradeResultPlayer2.getContents()) {
 					if(i == null) continue;
 					LeftOvers.addAll(pl2.getInventory().addItem(i).values());
 				}
-				for(final ItemStack drops : LeftOvers)
+				for(ItemStack drops : LeftOvers)
 				{
 					i2.addItem(drops);
 				}
 				if(!i2.isEmpty()) pl2.openInventory(i2);
+				else pl2.closeInventory();
 			}
 			else
 			{
