@@ -3,7 +3,7 @@ package net.justonedeveloper.plugins.trading.main;
 import net.justonedeveloper.plugins.trading.language.Language;
 import net.justonedeveloper.plugins.trading.language.LanguageInventory;
 import net.justonedeveloper.plugins.trading.language.Phrase;
-import net.justonedeveloper.plugins.trading.settings.TradeSettingsInventory;
+import net.justonedeveloper.plugins.trading.settings.TradeSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,9 +18,19 @@ public final class TradingMain extends JavaPlugin {
 	// Maybe do a basic own money implementation?
 	// Money implementation from other plugins would only work if the store and read live from the file every time
 	
-	// Also planned: Custom Language System with LangConfig and in the file there is language name and phrases, and you can generate a new language file via a command
-	
 	public static TradingMain main;
+	
+	// For future version: Reload Language feature so server restart is not required
+	
+	/**
+	* Permission Overview:
+	 * trading.admin.language.* - All of them
+	 * trading.admin.language.create - Create Languages
+	 * trading.admin.language.reload - Reload Languages
+	 * trading.admin.language.edit - Edit Languages / See the edit screen
+	 * trading.admin.language.reset - Reset Languages
+	 * trading.admin.language.delete - Delete Languages (not the main one)
+	* */
 	
 	@Override
 	public void onEnable() {
@@ -30,7 +40,7 @@ public final class TradingMain extends JavaPlugin {
 		Language.Init();
 		// trade command, setting page with privacy and 2fa/double check like in Rocket League
 		Bukkit.getPluginManager().registerEvents(new TradeInventoryEventHandler(), this);
-		Bukkit.getPluginManager().registerEvents(new TradeSettingsInventory(), this);
+		Bukkit.getPluginManager().registerEvents(new TradeSettings(), this);
 		Bukkit.getPluginManager().registerEvents(new LanguageInventory(), this);
 		this.getCommand("trade").setExecutor(new TradeCommand());
 	}
@@ -99,42 +109,12 @@ public final class TradingMain extends JavaPlugin {
 	
 	public void Init()
 	{
-		/*
 		ItemStack it = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
 		m.setDisplayName("§f ");
 		it.setItemMeta(m);
 		Trade.EmptyStack = it;
-		
-		it = new ItemStack(Material.RED_STAINED_GLASS_PANE, 1);
-		m.setDisplayName("§c§lConfirm Trade");
-		it.setItemMeta(m);
-		Trade.ConfirmRedOwn = it;
-		
-		it = new ItemStack(Material.RED_STAINED_GLASS_PANE, 1);
-		m.setDisplayName("§c§lPartner has not confirmed Trade");
-		it.setItemMeta(m);
-		Trade.ConfirmRedOther = it;
-		
-		it = new ItemStack(Material.LIME_STAINED_GLASS_PANE, 1);
-		m.setDisplayName("§a§lTrade confirmed");
-		m.setLore(Collections.singletonList("§cClick to rescind offer"));
-		it.setItemMeta(m);
-		Trade.ConfirmGreenOwn = it;
-		
-		it = new ItemStack(Material.LIME_STAINED_GLASS_PANE, 1);
-		m = it.getItemMeta();
-		assert m != null;
-		m.setDisplayName("§a§lPartner has confirmed Trade");
-		it.setItemMeta(m);
-		Trade.ConfirmGreenOther = it;
-		
-		it = new ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE, 1);
-		m.setDisplayName("§b§lTrading in progress...");
-		it.setItemMeta(m);
-		Trade.ConfirmLoadingBar = it;
-		*/
 		
 		for(int i = 0; i < 54; ++i)
 		{

@@ -20,12 +20,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
-public class TradeSettingsInventory implements Listener {
+public class TradeSettings implements Listener {
 	
-	// Settings: Anyone can send trades, auto-accept, auto-decline (funny, ik), auto-collect items (maybe overflow stays in inventory),
+	// Settings: Anyone can send trades, auto-accept, auto-decline (funny, ik), auto-collect items (maybe overflow stays in inventory), also dont-notify-players-on-cancel
 	
 	private static final File folder = new File(TradingMain.main.getDataFolder(), "UserData");
 	
@@ -59,7 +61,7 @@ public class TradeSettingsInventory implements Listener {
 		if(!Language.exists(lang))
 		{
 			if(lang == null) lang = "null";
-			p.sendMessage(Language.getPhrase(Phrase.ERROR_LANGUAGE_NOT_EXIST).replace("%lang%", lang));
+			p.sendMessage(Language.getPhrase(Phrase.ERROR_LANGUAGE_WAS_DELETED).replace("%lang%", lang));
 			cfg.set("Language", Language.DefaultLanguage);
 		}
 		cfg.set("Last known name", p.getName());
@@ -80,12 +82,6 @@ public class TradeSettingsInventory implements Listener {
 	{
 		YamlConfiguration cfg = getConfigurationOf(uuid);
 		return PrivacySettingValue.valueOf(cfg.getString("Trade Privacy Setting"));
-		
-		/*
-		if(UserSettings.containsKey(uuid)) return UserSettings.get(uuid).Key;
-		UserSettings.put(uuid, new KeyValuePair<>(DefaultPrivacySettingValue, DefaultAutoCollectItemsValue));
-		return DefaultPrivacySettingValue;
-		 */
 	}
 	
 	public static String getLanguage(UUID uuid)
@@ -98,11 +94,6 @@ public class TradeSettingsInventory implements Listener {
 	{
 		YamlConfiguration cfg = getConfigurationOf(uuid);
 		return cfg.getBoolean("Auto Collect Items");
-		/*
-		if(UserSettings.containsKey(uuid)) return UserSettings.get(uuid).Value;
-		UserSettings.put(uuid, new KeyValuePair<>(DefaultPrivacySettingValue, DefaultAutoCollectItemsValue));
-		return DefaultAutoCollectItemsValue;
-		 */
 	}
 	
 	public static void setPrivacySettingValue(UUID uuid, PrivacySettingValue value)
@@ -110,10 +101,6 @@ public class TradeSettingsInventory implements Listener {
 		YamlConfiguration cfg = getConfigurationOf(uuid);
 		cfg.set("Trade Privacy Setting", value.toString());
 		saveFile(new File(folder, uuid + ".yml"), cfg);
-		/*
-		if(UserSettings.containsKey(uuid)) UserSettings.get(uuid).Key = value;
-		else UserSettings.put(uuid, new KeyValuePair<>(value, DefaultAutoCollectItemsValue));
-		 */
 	}
 	
 	public static void setAutoCollectSettingValue(UUID uuid, boolean value)
@@ -134,11 +121,12 @@ public class TradeSettingsInventory implements Listener {
 		saveFile(new File(folder, uuid + ".yml"), cfg);
 	}
 	
-	public static void OpenInventory(Player p)
+	public static void openInventory(Player p)
 	{
 		Inventory inv = Bukkit.createInventory(null, 54, Language.get(p, Phrase.TRADE_SETTINGS_INVENTORY_TITLE, p.getName()));
 		UUID uuid = p.getUniqueId();
 		Language lang = Language.getLanguage(uuid);
+		boolean autoFill = getAutoCollectSettingValue(uuid);
 		
 		ItemStack autoAccept = new ItemStack(Material.CAKE);
 		ItemMeta meta = autoAccept.getItemMeta();
@@ -156,6 +144,14 @@ public class TradeSettingsInventory implements Listener {
 		
 		ItemStack autoCollect = new ItemStack(Material.ENDER_CHEST);
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME));
+		List<String> l = new ArrayList<>();
+		for(String s : lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE).split("\n"))
+		{
+			l.add("§7" + s);
+		}
+		if(autoFill) l.add(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME));
+		else l.add(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME));
+		meta.setLore(l);
 		autoCollect.setItemMeta(meta);
 		
 		ItemStack language = new ItemStack(Material.DARK_OAK_SIGN);
@@ -203,14 +199,14 @@ public class TradeSettingsInventory implements Listener {
 				break;
 		}
 		
-		if(getAutoCollectSettingValue(uuid)) inv.setItem(15, activated);
+		if(autoFill) inv.setItem(15, activated);
 		else inv.setItem(15, deactivated);
 		
 		p.openInventory(inv);
 	}
 	
 	@EventHandler
-	public void OnInventoryClick(InventoryClickEvent e)
+	public void onInventoryClick(InventoryClickEvent e)
 	{
 		if(!(e.getWhoClicked() instanceof Player)) return;
 		Player p = (Player) e.getWhoClicked();
@@ -226,7 +222,6 @@ public class TradeSettingsInventory implements Listener {
 		e.setCancelled(true);
 		
 		// Clicked on Settings inv or shift clicked, both should get cancelled
-		// Maybe open inventory return value if it doesn't update
 		InvokeClickedSlot(p, e.getInventory(), e.getCurrentItem(), e.getRawSlot());
 	}
 	
@@ -287,6 +282,19 @@ public class TradeSettingsInventory implements Listener {
 					meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME));
 					meta.setLore(Collections.singletonList(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_LORE)));
 					deactivated.setItemMeta(meta);
+					
+					ItemStack autoCollect = new ItemStack(Material.ENDER_CHEST);
+					meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME));
+					List<String> l = new ArrayList<>();
+					for(String s : lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE).split("\n"))
+					{
+						l.add("§7" + s);
+					}
+					l.add(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME));
+					meta.setLore(l);
+					autoCollect.setItemMeta(meta);
+					
+					inv.setItem(14, autoCollect);
 					inv.setItem(15, deactivated);
 				}
 				else
@@ -297,6 +305,19 @@ public class TradeSettingsInventory implements Listener {
 					meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME));
 					meta.setLore(Collections.singletonList(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_LORE)));
 					activated.setItemMeta(meta);
+					
+					ItemStack autoCollect = new ItemStack(Material.ENDER_CHEST);
+					meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME));
+					List<String> l = new ArrayList<>();
+					for(String s : lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE).split("\n"))
+					{
+						l.add("§7" + s);
+					}
+					l.add(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME));
+					meta.setLore(l);
+					autoCollect.setItemMeta(meta);
+					
+					inv.setItem(14, autoCollect);
 					inv.setItem(15, activated);
 				}
 				setAutoCollectSettingValue(uuid, !hasAutoEnabled);

@@ -2,11 +2,13 @@ package net.justonedeveloper.plugins.trading.main;
 
 import net.justonedeveloper.plugins.trading.language.Language;
 import net.justonedeveloper.plugins.trading.language.Phrase;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -107,7 +109,7 @@ public class TradeInventoryEventHandler implements Listener {
 		
 		// Normal Click
 		assert e.getClickedInventory() != null;
-		if(!e.getClickedInventory().equals(e.getInventory())) return;													// <-- Todo is this working as intended?
+		if(!e.getClickedInventory().equals(e.getInventory())) return;
 		
 		// Clicked on Trade Inventory, now Handle
 		if(col > 3 || row == 0 || row >= 4 || HasConfirmed)
@@ -159,7 +161,7 @@ public class TradeInventoryEventHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void OnInventoryClose(InventoryCloseEvent e)
+	public void onInventoryClose(InventoryCloseEvent e)
 	{
 		// Also invoked when server crashed and stuff
 		if(Trades.containsKey(e.getPlayer().getUniqueId()))
@@ -181,16 +183,23 @@ public class TradeInventoryEventHandler implements Listener {
 				p.getWorld().dropItemNaturally(p.getLocation(), drops);
 			}
 		}
-		
-		// Dev note: we need to remove both players and then close the inv of the one who has not closed his himself, maybe even personalized messages?
 	}
 	
 	@EventHandler
-	public void OnDisconnect(PlayerQuitEvent e)
+	public void onDisconnect(PlayerQuitEvent e)
 	{
 		UUID uuid = e.getPlayer().getUniqueId();
 		// Its not necessary to remove trade offers TO this player since.. they can't accept.
-		TradeCommand.TradeRequests.remove(uuid);
+		TradeCommand.clearPendingTrades(uuid);
+	}
+	
+	@EventHandler
+	public void onGameModeChanged(PlayerGameModeChangeEvent e)
+	{
+		UUID uuid = e.getPlayer().getUniqueId();
+		if(!e.getNewGameMode().equals(GameMode.SPECTATOR)) return;
+		TradeCommand.clearPendingTrades(uuid);
+		if(Trades.containsKey(uuid)) e.getPlayer().closeInventory();
 	}
 
 }

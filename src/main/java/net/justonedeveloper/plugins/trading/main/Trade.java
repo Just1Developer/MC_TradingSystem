@@ -1,8 +1,8 @@
 package net.justonedeveloper.plugins.trading.main;
 
 import net.justonedeveloper.plugins.trading.language.Language;
-import net.justonedeveloper.plugins.trading.language.LanguageInventory;
 import net.justonedeveloper.plugins.trading.language.Phrase;
+import net.justonedeveloper.plugins.trading.settings.TradeSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -325,8 +325,10 @@ public class Trade {
 		Bukkit.getScheduler().cancelTask(ConfirmScheduler);
 		
 		Player pl1 = Bukkit.getPlayer(uuidPlayer1), pl2 = Bukkit.getPlayer(uuidPlayer2);
-		Inventory TradeResultPlayer1 = Bukkit.createInventory(null, 27, Language.get(pl1, Phrase.TRADE_INVENTORY_CONCLUSION_TITLE, (pl2 != null ? pl2.getName() : Language.get(pl1, Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME)))),
-				TradeResultPlayer2 = Bukkit.createInventory(null, 27, Language.get(pl2, Phrase.TRADE_INVENTORY_CONCLUSION_TITLE, (pl1 != null ? pl1.getName() : Language.get(pl2, Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME))));
+		String TitlePlayer1 = Language.get(pl1, Phrase.TRADE_INVENTORY_CONCLUSION_TITLE, (pl2 != null ? pl2.getName() : Language.get(pl1, Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME))),
+				TitlePlayer2 = Language.get(pl2, Phrase.TRADE_INVENTORY_CONCLUSION_TITLE, (pl1 != null ? pl1.getName() : Language.get(pl2, Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME)));
+		Inventory TradeResultPlayer1 = Bukkit.createInventory(null, 27, TitlePlayer1),
+				TradeResultPlayer2 = Bukkit.createInventory(null, 27, TitlePlayer2);
 		for(ItemStack item : GetTradedItems(2))
 		{
 			TradeResultPlayer1.addItem(item);
@@ -337,9 +339,49 @@ public class Trade {
 		}
 		TradeInventoryEventHandler.Trades.remove(uuidPlayer1);
 		TradeInventoryEventHandler.Trades.remove(uuidPlayer2);
-		if(pl1 != null && !TradeResultPlayer1.isEmpty()) pl1.openInventory(TradeResultPlayer1);
+		if(pl1 != null && !TradeResultPlayer1.isEmpty())
+		{
+			if(TradeSettings.getAutoCollectSettingValue(pl1.getUniqueId()))
+			{
+				Inventory i2 = Bukkit.createInventory(null, 27, TitlePlayer1);
+				List<ItemStack> LeftOvers = new ArrayList<>();
+				for(final ItemStack i : TradeResultPlayer1.getContents()) {
+					if(i == null) continue;
+					LeftOvers.addAll(pl1.getInventory().addItem(i).values());
+				}
+				for(final ItemStack drops : LeftOvers)
+				{
+					i2.addItem(drops);
+				}
+				if(!i2.isEmpty()) pl1.openInventory(i2);
+			}
+			else
+			{
+				pl1.openInventory(TradeResultPlayer1);
+			}
+		}
 		else if(pl1 != null) pl1.closeInventory();
-		if(pl2 != null && !TradeResultPlayer2.isEmpty()) pl2.openInventory(TradeResultPlayer2);
+		if(pl2 != null && !TradeResultPlayer2.isEmpty())
+		{
+			if(TradeSettings.getAutoCollectSettingValue(pl2.getUniqueId()))
+			{
+				Inventory i2 = Bukkit.createInventory(null, 27, TitlePlayer2);
+				List<ItemStack> LeftOvers = new ArrayList<>();
+				for(final ItemStack i : TradeResultPlayer1.getContents()) {
+					if(i == null) continue;
+					LeftOvers.addAll(pl2.getInventory().addItem(i).values());
+				}
+				for(final ItemStack drops : LeftOvers)
+				{
+					i2.addItem(drops);
+				}
+				if(!i2.isEmpty()) pl2.openInventory(i2);
+			}
+			else
+			{
+				pl2.openInventory(TradeResultPlayer2);
+			}
+		}
 		else if(pl2 != null) pl2.closeInventory();
 	}
 
