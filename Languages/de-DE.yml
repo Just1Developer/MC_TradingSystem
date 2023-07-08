@@ -1,0 +1,103 @@
+Language:
+  LanguageName: Deutsch
+  ItemMaterial: DARK_OAK_SIGN
+ERROR_LANGUAGE_ALREADY_EXISTS: §cSorry, diese Sprache gibt es schon.
+ERROR_LANGUAGE_NOT_EXIST: §cSorry, diese Sprache gibt es scheinbar noch nicht.
+ERROR_INSUFFICIENT_PERMISSIONS: §cSorry, dafür hast du keine Rechte.
+ERROR_PLAYER_NOT_ONLINE: §cKonnte den Spieler §7%name% §cnicht finden.
+ERROR_SENDER_NOT_PLAYER: §cDieser Befehl ist nur für Spieler
+ERROR_TRADE_COMMAND_HELP: |-
+  §cFehler: Unbekannte Nutzung von /trade. Versuch's mal mit:
+  §e/trade §7[Spieler] §8oder §e/trade <accept, decline, cancel> §7[Spieler]
+ERROR_TRADE_LANGUAGE_COMMAND_HELP: |-
+  §cFehler: Unbekannte Nutzung von /trade language. Versuch's mal mit:
+  §e/trade language <create/edit/delete> <Sprachcode> §7[Sprachname für create]
+ERROR_TRADE_LANGUAGE_COMMAND_HELP_CREATE: |-
+  §cFehler: Unbekannte Nutzung von /trade language create. Versuch's mal mit:
+  §e/trade language <create/edit/delete> <Sprachcode> §7<Sprachname>
+ERROR_INCORRECT_LANGUAGE_CODE_FORMAT: |-
+  §cFehler: Falsches Sprachcode format. Das richtige Format ist: §exx-XX§c.
+  §cZum Beispiel: §7en-US §coder §7de-DE§c.
+ERROR_MESSAGE_CANNOT_DELETE_DEFAULT_LANGUAGE: '§4§lFehler: Die Standardsprache kann
+  nicht gelöscht werden!'
+SUCCESS_LANGUAGE_CREATED: §aErfolg! §eDu hast die Sprache §c%lang% §7(%langName%) §eerstellt.
+TRADE_DENY_WITH_SELF: §cDu kannst nicht mit dir selbst handeln!
+TRADE_DENY_NO_ACCEPT: §cDieser Spieler erlaubt keine Handelsanfragen.
+TRADE_DENY_ALREADY_PENDING: §cDu hast bereits ein ausstehendes Handelsangebot an §7%name%§c.
+TRADE_DENY_TRY_ACCEPT_NO_OFFER: §cDu hast kein ausstehendes Handelsangebot von §7%name%§c.
+TRADE_DENY_TRY_CANCEL_NO_OFFER: §cDu hast kein ausstehendes Handelsangebot an §7%name%§c.
+ITEM_NAME_CONFIRM_TRADE: §c§lHandel bestätigen
+ITEM_NAME_TRADE_CONFIRMED: §a§lHandel bestätigt
+ITEM_LORE_CLICK_TO_RESCIND: §cKlicke, um das Angebot zurückzunehmen
+ITEM_NAME_PARTNER_NOT_CONFIRMED: §c§lPartner hat den Handel noch nicht bestätigt
+ITEM_NAME_PARTNER_CONFIRMED: §a§lPartner hat den Handel bestätigt
+ITEM_NAME_PROCESSING_TRADE: §b§lHandel im Gange...
+TRADE_SENT_MESSAGE_BASE: §eDu hast §7%name% §ezum Handeln eingeladen. §7%name% §ehat
+  §7%seconds% §esSekunden, um es anzunehmen.
+TRADE_SENT_MESSAGE_CANCEL: ZURÜCKNEHMEN
+TRADE_SENT_MESSAGE_HOVER_CANCEL: §8Klicke um das Angebot zurückzunehmen
+TRADE_RECEIVED_MESSAGE_BASE: §7%name% §ehat dich zum Handeln eingeladen§e. Du hast
+  §7%seconds% §eSekunden zum Annehmen.
+TRADE_RECEIVED_MESSAGE_ACCEPT: HANDEL ANNEHMEN
+TRADE_RECEIVED_MESSAGE_DECLINE: HANDEL ABLEHNEN
+TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT: §8Klicke, um das Angebot anzunehmen
+TRADE_RECEIVED_MESSAGE_HOVER_DECLINE: §8Klicke, um das Angebot abzulehnen
+TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT: §e%name% §ehat deine Handelsanfrage §aangenommen§e.
+TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED: §eDu hast die Handelsanfrage von §7%name%
+  §aakzeptiert§e.
+TRADE_OFFER_RESULT_MESSAGE_DECLINED_SENT: §e%name% §ehat deine Handelsanfrage §4abgelehnt§e.
+TRADE_OFFER_RESULT_MESSAGE_DECLINED_RECEIVED: §eDu hast die Handelsanfrage von §7%name%
+  §4abgelehnt§e.
+TRADE_OFFER_CANCELLED_SUCCESS: §eDu hast die Handelsanfrage an §7%name% §4zurückgezogen§e.
+TRADE_INVENTORY_TITLE: §8Handel mit %name%
+TRADE_INVENTORY_CONCLUSION_TITLE: '§8Neue Items: Handel mit %name%'
+TRADE_INVENTORY_CLOSE_CANCELLED_MESSAGE: §cDer Handel wurde abgebrochen.
+TRADE_INVENTORY_UNKNOWN_PLAYER_NAME: §c[UNBEKANNT]
+TRADE_INVENTORY_MESSAGE_OPENING_SETTINGS_INVENTORY: §eÖffne Handels-Einstellungen..
+TRADE_SETTINGS_INVENTORY_TITLE: '§8Handels-Einstellungen: %name%'
+TRADE_SETTINGS_INVENTORY_ENABLED_NAME: §a§lEingeschaltet
+TRADE_SETTINGS_INVENTORY_ENABLED_LORE: §8Klicke zum Ausschalten
+TRADE_SETTINGS_INVENTORY_DISABLED_NAME: §c§lAusgeschaltet
+TRADE_SETTINGS_INVENTORY_DISABLED_LORE: §8Klicke zum Einschalten
+TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_NAME: §8Inaktiv
+TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_LORE: §8Klicke zum Einschalten
+TRADE_SETTINGS_INVENTORY_AUTO_ACCEPT_NAME: §aAlle Handel automatisch annehmen
+TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME: §eHandel auf Nachfrage
+TRADE_SETTINGS_INVENTORY_AUTO_DECLINE_NAME: §cAlle Handel automatisch ablehnen
+TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME: §dItems automatisch einsammeln
+TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE: |-
+  Items werden nach dem Handel automatisch
+  zu deinem Inventar hinzugefügt.
+TRADE_SETTINGS_INVENTORY_SET_LANGUAGE_NAME: §eSprache auswählen
+TRADE_LANG_SETTINGS_INVENTORY_TITLE: §8Spracheinstellungen | Seite %page%
+TRADE_LANG_SETTINGS_BACK_TO_SETTINGS_NAME: §cZurück zu den Einstellungen
+TRADE_LANG_SETTINGS_ADMIN_EDIT_LANGUAGE_NAME: §eSprache bearbeiten
+TRADE_LANG_SETTINGS_NEXT_PAGE_NAME: §7Nächste Seite
+TRADE_LANG_SETTINGS_PREV_PAGE_NAME: §7Vorherige Seite
+TRADE_LANG_SETTINGS_CHANGED_LANGUAGE_MESSAGE: §eSprache zu §7%lang% §egewechselt.
+LANGUAGE_EDIT_INVENTORY_TITLE: §8Sprache §d§l%lang% §8bearbeiten
+LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_NAME: §eSprachmaterial bearbeiten
+LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_LORE: §7Klicke mit einem Gegenstand hierdrauf
+  um das Material zu ändern.
+LANGUAGE_EDIT_INVENTORY_DELETE_LANG_NAME: '§4§lSprache %langName% löschen | '
+LANGUAGE_EDIT_INVENTORY_DELETE_LANG_LORE: |-
+  §c§lKann nicht rückgängig gemacht werden.
+  §c§lShift-klick zum Löschen.
+LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_NAME: §8§lKann Sprache §c%lang%
+  §8nicht löschen
+LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_LORE: §7§lKann die Standardsprache
+  nicht löschen.
+LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_NAME: §cZurück zu den Sprachen
+LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_LORE: §7Seite %page%
+LANGUAGE_EDIT_MESSAGE_LANG_DELETED: §cSprache §4§l%langName% §7(%lang%) §cgelöscht.
+LANGUAGE_EDIT_MESSAGE_ITEM_UPDATED: §eItem für §d§l%langName% §eaktualisiert.
+ERROR_PLAYER_IN_SPECTATOR_MODE: §cDu kannst im Zuschauermodus nicht handeln!
+ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE: §7%name% §7cannot trade right now.
+LANGUAGE_EDIT_INVENTORY_RESET_LANG_NAME: '§c§lSprache %langName% zurücksetzen | '
+LANGUAGE_EDIT_INVENTORY_RESET_LANG_LORE: |-
+  §e§lKann nicht rückgängig gemacht werden.
+  §e§lShift-klick zum Zurücksetzen.
+LANGUAGE_EDIT_MESSAGE_ITEM_RESET: §cSprache §d§l%langName% §7(%lang%) §czurücksetzen.
+SUCCESS_LANGUAGE_RELOADED: §eSprache §7%lang% §eneu geladen.
+LANGUAGE_EDIT_MESSAGE_LANG_RESET: §cSprache §d§l%langName% §7(%lang%) §cwurde zurückgesetzt.
+XP_TRADING_: §cunknown

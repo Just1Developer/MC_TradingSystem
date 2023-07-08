@@ -1,0 +1,105 @@
+Language:
+  LanguageName: Português Brasileiro
+  ItemMaterial: DARK_OAK_SIGN
+ERROR_LANGUAGE_WAS_DELETED: §cO idioma selecionado(%lang%) foi deletado. Seu idioma
+  foi setado para inglês.
+ERROR_LANGUAGE_ALREADY_EXISTS: §cDesculpe, esse idioma já existe.
+ERROR_LANGUAGE_NOT_EXIST: §cDesculpe, esse idioma não existe.
+ERROR_INSUFFICIENT_PERMISSIONS: §cDesculpe, você não tem permissão para usar esse
+  comando.
+ERROR_PLAYER_NOT_ONLINE: §cJogador §7%name%§c não encontrado.
+ERROR_SENDER_NOT_PLAYER: §cEsse comando é exclusivo para jogadores!
+ERROR_PLAYER_IN_SPECTATOR_MODE: §cVocê não pode fazer trocas no modo espectador!
+ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE: §7%name% §7não pode trocar agora.
+ERROR_TRADE_COMMAND_HELP: |-
+  §cError: Uso desconhecido de /trade. Tente:
+  §e/trade §7[player]§8, §e/trade <accept, decline, cancel> §7[player] §8ou §e/trade language ...
+ERROR_TRADE_LANGUAGE_COMMAND_HELP: |-
+  §cError: Uso desconhecido de /trade language. Tente:
+  §e/trade language <create/reload/edit/reset/delete> <LanguageCode> §7[for create: LanguageName]
+ERROR_TRADE_LANGUAGE_COMMAND_HELP_CREATE: |-
+  §cError: Uso desconhecido de /trade language. Tente:
+  §e/trade language create <LanguageCode> <LanguageName>
+ERROR_INCORRECT_LANGUAGE_CODE_FORMAT: |-
+  §cError: Código de idioma incorreto. O formato correto é: §exx-XX§c.
+  §cPor exemplo: §7en-US §cou §7de-DE§c.
+ERROR_MESSAGE_CANNOT_DELETE_DEFAULT_LANGUAGE: '§4§lErro: Idioma padrão não pode ser
+  deletado!'
+SUCCESS_LANGUAGE_CREATED: §aSucesso! §eVocê criou o idioma %lang% §7(%langName%)§e.
+SUCCESS_LANGUAGE_RELOADED: §eIdioma §7%lang%§e recarregado.
+TRADE_DENY_WITH_SELF: §cVocê não pode trocar consigo mesmo.
+TRADE_DENY_NO_ACCEPT: §cEsse jogador não está recebendo trocas no momento.
+TRADE_DENY_ALREADY_PENDING: §cVocê já tem um pedido de troca pendente com esse jogador.
+TRADE_DENY_TRY_ACCEPT_NO_OFFER: §cVocê tem um pedido de troca do jogador %name%
+TRADE_DENY_TRY_CANCEL_NO_OFFER: §cYVocê não tem um pedido de troca do jogador %name%
+ITEM_NAME_CONFIRM_TRADE: §c§lConfirmar troca
+ITEM_NAME_TRADE_CONFIRMED: §a§lTroca confirmada
+ITEM_LORE_CLICK_TO_RESCIND: §cClique para rejeitar troca
+ITEM_NAME_PARTNER_NOT_CONFIRMED: §c§lO jogador não confirmou a troca
+ITEM_NAME_PARTNER_CONFIRMED: §a§lO jogador confirmou a troca
+ITEM_NAME_PROCESSING_TRADE: §b§lTroca em progresso...
+TRADE_SENT_MESSAGE_BASE: §eVocê convidou §7%name% §epara troca. O jogador tem §7%seconds%
+  §esegundos para aceitar.
+TRADE_SENT_MESSAGE_CANCEL: DESISTIR
+TRADE_SENT_MESSAGE_HOVER_CANCEL: §aClique para rejeitar a troca
+TRADE_RECEIVED_MESSAGE_BASE: §eVocê recebeu um pedido de troca de §7%name%§e. Você
+  tem §7%seconds% §esegundos para aceitar.
+TRADE_RECEIVED_MESSAGE_ACCEPT: ACEITAR TROCA
+TRADE_RECEIVED_MESSAGE_DECLINE: RECUSAR TROCA
+TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT: §8Clique para aceitar troca
+TRADE_RECEIVED_MESSAGE_HOVER_DECLINE: §8Clique para recusar troca
+TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT: §e%name% §aaceitou §eseu pedido de troca
+TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED: §eVocê §aaceitou §eo pedido de troca
+  de §7%name%
+TRADE_OFFER_RESULT_MESSAGE_DECLINED_SENT: §e%name% §4recusou §eseu pedido de troca
+TRADE_OFFER_RESULT_MESSAGE_DECLINED_RECEIVED: §eVocê §4recusou §eo pedido de troca
+  de §7%name%
+TRADE_OFFER_CANCELLED_SUCCESS: §eVocê §4cancelou §eo pedido de troca de §7%name%§e.
+TRADE_INVENTORY_TITLE: §8Troca com %name%
+TRADE_INVENTORY_CONCLUSION_TITLE: '§8Novos itens: Troca com %name%'
+TRADE_INVENTORY_CLOSE_CANCELLED_MESSAGE: §cA troca foi cancelada.
+TRADE_INVENTORY_UNKNOWN_PLAYER_NAME: §c[UNKNOWN]
+TRADE_INVENTORY_MESSAGE_OPENING_SETTINGS_INVENTORY: §eAbrindo configurações de troca..
+TRADE_SETTINGS_INVENTORY_TITLE: '§8Configurações de Troca: %name%'
+TRADE_SETTINGS_INVENTORY_ENABLED_NAME: §a§lAtivado
+TRADE_SETTINGS_INVENTORY_ENABLED_LORE: §8Clique para desativar
+TRADE_SETTINGS_INVENTORY_DISABLED_NAME: §c§lDesativado
+TRADE_SETTINGS_INVENTORY_DISABLED_LORE: §8Clique para ativar
+TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_NAME: §8Inativo
+TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_LORE: §8Clique para ativar
+TRADE_SETTINGS_INVENTORY_AUTO_ACCEPT_NAME: §aAuto-Aceitar trocas
+TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME: §eTroca por Solicitação
+TRADE_SETTINGS_INVENTORY_AUTO_DECLINE_NAME: §cAuto-Recusar Trocas
+TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME: §dAuto-Coletar Itens
+TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE: |-
+  Itens são adicionados automaticamente
+  ao seu inventário pós-troca.
+TRADE_SETTINGS_INVENTORY_SET_LANGUAGE_NAME: §eSelecionar Idioma
+TRADE_LANG_SETTINGS_INVENTORY_TITLE: §8Configuração de Idioma | Página %page%
+TRADE_LANG_SETTINGS_BACK_TO_SETTINGS_NAME: §cVoltar para configurações
+TRADE_LANG_SETTINGS_ADMIN_EDIT_LANGUAGE_NAME: §eEditar Idioma
+TRADE_LANG_SETTINGS_NEXT_PAGE_NAME: §7Próxima Página
+TRADE_LANG_SETTINGS_PREV_PAGE_NAME: §7Página Anterior
+TRADE_LANG_SETTINGS_CHANGED_LANGUAGE_MESSAGE: §eIdioma mudado para %lang%§e.
+LANGUAGE_EDIT_INVENTORY_TITLE: §8Editando Idioma §d§l%lang%
+LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_NAME: §eMudar ícone do idioma
+LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_LORE: §7Clique/Arraste aqui com um item para mudar
+  o ícone.
+LANGUAGE_EDIT_INVENTORY_DELETE_LANG_NAME: '§4§lDeletar Idioma: %langName% | '
+LANGUAGE_EDIT_INVENTORY_DELETE_LANG_LORE: |-
+  §c§lEssa ação não pode ser desfeita.
+  §c§lShift-clique para deletar.
+LANGUAGE_EDIT_INVENTORY_RESET_LANG_NAME: '§c§lResetar Idioma: %langName% | '
+LANGUAGE_EDIT_INVENTORY_RESET_LANG_LORE: |-
+  §e§lEssa ação não pode ser desfeita.
+  §e§lShift-clique para deletar.
+LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_NAME: '§8§lNão foi possível deletar
+  o idioma: %lang%'
+LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_LORE: §7§lO idioma padrão não pode
+  ser deletado.
+LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_NAME: §cVoltar para idiomas
+LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_LORE: §7Página %page%
+LANGUAGE_EDIT_MESSAGE_LANG_DELETED: §cIdioma Deletado §4§l%langName% §7(%lang%)
+LANGUAGE_EDIT_MESSAGE_ITEM_UPDATED: §eAtualizado ícone para §d§l%langName%
+LANGUAGE_EDIT_MESSAGE_LANG_RESET: §cResetar idioma §e§l%langName% §7(%lang%)§c.
+XP_TRADING_: §cunknown

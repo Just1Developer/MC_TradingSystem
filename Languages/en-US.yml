@@ -1,0 +1,103 @@
+Language:
+  LanguageName: English
+  ItemMaterial: DARK_OAK_SIGN
+ERROR_LANGUAGE_WAS_DELETED: §cYour selected language (%lang%) has been deleted. Your
+  language has been reset to English.
+ERROR_LANGUAGE_ALREADY_EXISTS: §cSorry, that language already exists.
+ERROR_LANGUAGE_NOT_EXIST: §cSorry, that language does not seem to exist.
+ERROR_INSUFFICIENT_PERMISSIONS: §cSorry, you don't have permission to do that.
+ERROR_PLAYER_NOT_ONLINE: §cCould not find player §7%name%§c.
+ERROR_SENDER_NOT_PLAYER: §cThis command is for players only!
+ERROR_PLAYER_IN_SPECTATOR_MODE: §cYou cannot accept trades while in spectator mode!
+ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE: §7%name% §7cannot trade right now.
+ERROR_TRADE_COMMAND_HELP: |-
+  §cError: Unknown usage of /trade. Instead, try:
+  §e/trade §7[player]§8, §e/trade <accept, decline, cancel> §7[player] §8or §e/trade language ...
+ERROR_TRADE_LANGUAGE_COMMAND_HELP: |-
+  §cError: Unknown usage of /trade language. Instead, try:
+  §e/trade language <create/reload/edit/reset/delete> <LanguageCode> §7[for create: LanguageName]
+ERROR_TRADE_LANGUAGE_COMMAND_HELP_CREATE: |-
+  §cError: Unknown usage of /trade language create. Instead, try:
+  §e/trade language create <LanguageCode> <LanguageName>
+ERROR_INCORRECT_LANGUAGE_CODE_FORMAT: |-
+  §cError: Incorrect Language Code format. The correct format is: §exx-XX§c.
+  §cFor example: §7en-US §cor §7de-DE§c.
+ERROR_MESSAGE_CANNOT_DELETE_DEFAULT_LANGUAGE: '§4§lError: Cannot delete default language!'
+SUCCESS_LANGUAGE_CREATED: §aSuccess! §eYou created the language %lang% §7(%langName%)§e.
+SUCCESS_LANGUAGE_RELOADED: §eReloaded language §7%lang%§e.
+TRADE_DENY_WITH_SELF: §cYou cannot trade with yourself.
+TRADE_DENY_NO_ACCEPT: §cThis player does not allow trade requests.
+TRADE_DENY_ALREADY_PENDING: §cYou already have a pending trade offer to this person.
+TRADE_DENY_TRY_ACCEPT_NO_OFFER: §cYou have no pending trade offer from %name%
+TRADE_DENY_TRY_CANCEL_NO_OFFER: §cYou have no pending trade offer to %name%
+ITEM_NAME_CONFIRM_TRADE: §c§lConfirm Trade
+ITEM_NAME_TRADE_CONFIRMED: §a§lTrade confirmed
+ITEM_LORE_CLICK_TO_RESCIND: §cClick to rescind offer
+ITEM_NAME_PARTNER_NOT_CONFIRMED: §c§lPartner has not confirmed Trade
+ITEM_NAME_PARTNER_CONFIRMED: §a§lPartner has confirmed Trade
+ITEM_NAME_PROCESSING_TRADE: §b§lTrading in progress...
+TRADE_SENT_MESSAGE_BASE: §eYou invited §7%name% §eto trade. They have §7%seconds%
+  §eseconds to accept.
+TRADE_SENT_MESSAGE_CANCEL: TAKE BACK
+TRADE_SENT_MESSAGE_HOVER_CANCEL: §aClick to rescind trade offer
+TRADE_RECEIVED_MESSAGE_BASE: §eYou have been invited to trade with §7%name%§e. You
+  have §7%seconds% §eseconds to accept.
+TRADE_RECEIVED_MESSAGE_ACCEPT: ACCEPT TRADE
+TRADE_RECEIVED_MESSAGE_DECLINE: DECLINE TRADE
+TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT: §8Click to accept trade
+TRADE_RECEIVED_MESSAGE_HOVER_DECLINE: §8Click to decline trade
+TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT: §e%name% §aaccepted §eyour trade request
+TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED: §eYou §aaccepted §ethe trade request
+  from §7%name%
+TRADE_OFFER_RESULT_MESSAGE_DECLINED_SENT: §e%name% §4declined §eyour trade request
+TRADE_OFFER_RESULT_MESSAGE_DECLINED_RECEIVED: §eYou §4declined §ethe trade request
+  from §7%name%
+TRADE_OFFER_CANCELLED_SUCCESS: §eYou §4cancelled §ethe trade request to §7%name%§e.
+TRADE_INVENTORY_TITLE: §8Trade with %name%
+TRADE_INVENTORY_CONCLUSION_TITLE: '§8New Items: Trade with %name%'
+TRADE_INVENTORY_CLOSE_CANCELLED_MESSAGE: §cThe trade has been cancelled.
+TRADE_INVENTORY_UNKNOWN_PLAYER_NAME: §c[UNKNOWN]
+TRADE_INVENTORY_MESSAGE_OPENING_SETTINGS_INVENTORY: §eOpening Trading Settings..
+TRADE_SETTINGS_INVENTORY_TITLE: '§8Trade Settings: %name%'
+TRADE_SETTINGS_INVENTORY_ENABLED_NAME: §a§lEnabled
+TRADE_SETTINGS_INVENTORY_ENABLED_LORE: §8Click to disable
+TRADE_SETTINGS_INVENTORY_DISABLED_NAME: §c§lDisabled
+TRADE_SETTINGS_INVENTORY_DISABLED_LORE: §8Click to enable
+TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_NAME: §8Inactive
+TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_LORE: §8Click to enable
+TRADE_SETTINGS_INVENTORY_AUTO_ACCEPT_NAME: §aAuto-Accept Trades
+TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME: §eTrade on Request
+TRADE_SETTINGS_INVENTORY_AUTO_DECLINE_NAME: §cAuto-Decline Trades
+TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME: §dAuto-Collect Items
+TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE: |-
+  Items are automatically added to
+  your inventory post-trade.
+TRADE_SETTINGS_INVENTORY_SET_LANGUAGE_NAME: §eSet Language
+TRADE_LANG_SETTINGS_INVENTORY_TITLE: §8Language Settings | Page %page%
+TRADE_LANG_SETTINGS_BACK_TO_SETTINGS_NAME: §cBack to Settings
+TRADE_LANG_SETTINGS_ADMIN_EDIT_LANGUAGE_NAME: §eEdit Language
+TRADE_LANG_SETTINGS_NEXT_PAGE_NAME: §7Next Page
+TRADE_LANG_SETTINGS_PREV_PAGE_NAME: §7Previous Page
+TRADE_LANG_SETTINGS_CHANGED_LANGUAGE_MESSAGE: §eChanged Language to %lang%§e.
+LANGUAGE_EDIT_INVENTORY_TITLE: §8Editing Language §d§l%lang%
+LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_NAME: §eChange Language Material
+LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_LORE: §7Click on this with an Item to change the
+  material.
+LANGUAGE_EDIT_INVENTORY_DELETE_LANG_NAME: '§4§lDelete Language: %langName% | '
+LANGUAGE_EDIT_INVENTORY_DELETE_LANG_LORE: |-
+  §c§lThis action cannot be undone.
+  §c§lShift-click to delete.
+LANGUAGE_EDIT_INVENTORY_RESET_LANG_NAME: '§c§lReset Language: %langName% | '
+LANGUAGE_EDIT_INVENTORY_RESET_LANG_LORE: |-
+  §e§lThis action cannot be undone.
+  §e§lShift-click to reset.
+LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_NAME: '§8§lCannot Delete Language:
+  %lang%'
+LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_LORE: §7§lCannot delete the default
+  language.
+LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_NAME: §cBack to Languages
+LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_LORE: §7Page %page%
+LANGUAGE_EDIT_MESSAGE_LANG_DELETED: §cDeleted Language §4§l%langName% §7(%lang%)
+LANGUAGE_EDIT_MESSAGE_ITEM_UPDATED: §eUpdated Item for §d§l%langName%
+LANGUAGE_EDIT_MESSAGE_LANG_RESET: §cReset Language §e§l%langName% §7(%lang%)§c.
+XP_TRADING_: §cunknown
