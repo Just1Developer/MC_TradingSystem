@@ -39,12 +39,41 @@ public class LanguageInventory implements Listener {
 		// This array fits the number of languages that will be displayed
 		int amount = Language.languageAmount() / LanguagesPerPage >= page ? LanguagesPerPage : Language.languageAmount() % LanguagesPerPage;
 		int startIndex = (page-1) * LanguagesPerPage;
+		/*
 		int empty = (int) (3.5 - amount * 0.5);
 		if(amount == 3) empty -= 1;
 		int index = 10 + empty;
+		*/
 		
-		for(int i = 0; i < amount; ++i)
+		int[] indexes;
+		switch (amount)
 		{
+			case 1:
+				indexes = new int[] { 13 };
+				break;
+			case 2:
+				indexes = new int[] { 12, 14 };
+				break;
+			case 3:
+				indexes = new int[] { 11, 13, 15 };
+				break;
+			case 4:
+				indexes = new int[] { 11, 12, 14, 15 };
+				break;
+			case 5:
+				indexes = new int[] { 10, 11, 13, 15, 16 };
+				break;
+			case 6:
+				indexes = new int[] { 10, 11, 12, 14, 15, 16 };
+				break;
+			default:
+				indexes = new int[] { 10, 11, 12, 13, 14, 15, 16 };
+				break;
+		}
+		
+		for(int i = 0; i < indexes.length; ++i)
+		{
+			int index = indexes[i];
 			// Add lang item: Perhaps later allow different item types
 			Language lang2 = Language.getLanguage(Language.get(startIndex + i));
 			
@@ -75,7 +104,7 @@ public class LanguageInventory implements Listener {
 				inv.setItem(index + 9, edit);
 			}
 			index++;
-			if(amount % 2 == 0 && index == amount / 2 || amount == 3) index++;	// empty in the middle
+			//if(amount % 2 == 0 && index == amount / 2 || amount == 3) index++;	// empty in the middle
 		}
 		
 		ItemStack item;
@@ -114,9 +143,20 @@ public class LanguageInventory implements Listener {
 	public void OnInventoryClick(InventoryClickEvent e) {
 		if (!(e.getWhoClicked() instanceof Player)) return;
 		Player p = (Player) e.getWhoClicked();
-		String title = Language.get(p, Phrase.LANGUAGE_EDIT_INVENTORY_TITLE).replace("%lang%", ""), title2 = Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE).replace("%page%", "");
-		if (e.getClickedInventory() == null || (!e.getView().getTitle().startsWith(title2) && !e.getView().getTitle().startsWith(title)))
+		String editTitle = Language.get(p, Phrase.LANGUAGE_EDIT_INVENTORY_TITLE), invTitle = Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE);
+		String[] edit = editTitle.split("%lang%"), invT = invTitle.split("%page%");
+		
+		String edit1 = editTitle.startsWith("%lang%") ? "" : edit[0];
+		String edit2 = editTitle.endsWith("%lang%") ? "" : edit[edit.length - 1];
+		String inv1 = invTitle.startsWith("%page%") ? "" : invT[0];
+		String inv2 = invTitle.endsWith("%page%") ? "" : invT[invT.length - 1];
+		String title = e.getView().getTitle();
+		
+		// Continue if: starts end ends with edit or starts and ends with inv
+		
+		if(!(title.startsWith(edit1) && title.endsWith(edit2) || title.startsWith(inv1) && title.endsWith(inv2)))
 			return;
+		
 		
 		if(e.isShiftClick())
 		{
@@ -166,9 +206,10 @@ public class LanguageInventory implements Listener {
 				}
 				
 				Material old = Language.getLanguage(lang).ItemMaterial;
-				Language.deleteLanguage(lang);
-				Language l = new Language(lang, lName);
-				l.setItemMaterial(old);
+				Language.CreateLanguageFile(lang, lName, true);
+				Language language = Language.getLanguage(lang);
+				language.reload();
+				language.setItemMaterial(old);
 				
 				p.sendMessage(Language.get(p, Phrase.LANGUAGE_EDIT_MESSAGE_LANG_RESET).replace("%langName%", lName).replace("%lang%", lang));
 				openInventory(p, 1);
@@ -376,8 +417,18 @@ public class LanguageInventory implements Listener {
 	{
 		if(!(e.getWhoClicked() instanceof Player)) return;
 		Player p = (Player) e.getWhoClicked();
-		String title = Language.get(p, Phrase.LANGUAGE_EDIT_INVENTORY_TITLE).replace("%lang%", ""), title2 = Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE).replace("%page%", "");
-		if ((!e.getView().getTitle().startsWith(title2) && !e.getView().getTitle().startsWith(title)))
+		String editTitle = Language.get(p, Phrase.LANGUAGE_EDIT_INVENTORY_TITLE), invTitle = Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE);
+		String[] edit = editTitle.split("%lang%"), invT = invTitle.split("%page%");
+		
+		String edit1 = editTitle.startsWith("%lang%") ? "" : edit[0];
+		String edit2 = editTitle.endsWith("%lang%") ? "" : edit[edit.length - 1];
+		String inv1 = invTitle.startsWith("%page%") ? "" : invT[0];
+		String inv2 = invTitle.endsWith("%page%") ? "" : invT[invT.length - 1];
+		String title = e.getView().getTitle();
+		
+		// Continue if: starts end ends with edit or starts and ends with inv
+		
+		if(!(title.startsWith(edit1) && title.endsWith(edit2) || title.startsWith(inv1) && title.endsWith(inv2)))
 			return;
 		
 		
@@ -398,3 +449,20 @@ public class LanguageInventory implements Listener {
 	}
 		
 }
+
+		/*
+		System.out.println("editTitle: '" + editTitle + "'");
+		System.out.println("invTitle: '" + invTitle + "'");
+		System.out.println("editSize: '" + edit.length + "'");
+		System.out.println("invSize: '" + invT.length + "'");
+		System.out.println("edit1: '" + edit1 + "'");
+		System.out.println("edit2: '" + edit2 + "'");
+		System.out.println("inv1: '" + inv1 + "'");
+		System.out.println("inv2: '" + inv2 + "'");
+		System.out.println("title: '" + title + "'");
+		System.out.println("condition1: '" + title.startsWith(edit1) + "'");
+		System.out.println("condition2: '" + title.endsWith(edit2) + "'");
+		System.out.println("condition3: '" + title.startsWith(inv1) + "'");
+		System.out.println("condition4: '" + title.endsWith(inv2) + "'");
+		*/
+		

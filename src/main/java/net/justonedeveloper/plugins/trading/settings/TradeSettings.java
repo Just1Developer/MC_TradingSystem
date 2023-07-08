@@ -155,8 +155,9 @@ public class TradeSettings implements Listener {
 		autoCollect.setItemMeta(meta);
 		
 		ItemStack language = new ItemStack(Material.DARK_OAK_SIGN);
+		meta = language.getItemMeta();
+		assert meta != null;
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_SET_LANGUAGE_NAME));
-		meta.setLore(Collections.singletonList(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE)));
 		language.setItemMeta(meta);
 		
 		ItemStack activated = new ItemStack(Material.LIME_STAINED_GLASS_PANE);

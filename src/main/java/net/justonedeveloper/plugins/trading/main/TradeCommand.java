@@ -271,7 +271,7 @@ public class TradeCommand implements CommandExecutor {
 		}
 		
 		// Check language format:
-		if(!correctLanguageCodeFormat(args[2]))
+		if(incorrectLanguageCodeFormat(args[2]))
 		{
 			sender.sendMessage(Language.get(p, Phrase.ERROR_INCORRECT_LANGUAGE_CODE_FORMAT));
 			return false;
@@ -320,7 +320,7 @@ public class TradeCommand implements CommandExecutor {
 				Language.deleteLanguage(code);
 				Language l = new Language(code, name);
 				l.setItemMaterial(old);
-				sender.sendMessage(Language.get(p, Phrase.LANGUAGE_EDIT_MESSAGE_LANG_RESET).replace("%lang%", args[2]));
+				sender.sendMessage(Language.get(p, Phrase.LANGUAGE_EDIT_MESSAGE_LANG_RESET).replace("%lang%", l.LanguageName));
 				return true;
 			case "edit":
 				if(!(sender instanceof Player))
@@ -341,8 +341,9 @@ public class TradeCommand implements CommandExecutor {
 					sender.sendMessage(Language.get(p, Phrase.ERROR_LANGUAGE_NOT_EXIST));
 					return false;
 				}
-				Language.getLanguage(code).reload();
-				sender.sendMessage(Language.get(p, Phrase.SUCCESS_LANGUAGE_RELOADED, code));
+				l = Language.getLanguage(code);
+				l.reload();
+				sender.sendMessage(Language.get(p, Phrase.SUCCESS_LANGUAGE_RELOADED, code).replace("%lang%", l.LanguageName));
 				return true;
 			default:
 				sender.sendMessage(Language.get(p, Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP));
@@ -350,14 +351,14 @@ public class TradeCommand implements CommandExecutor {
 		}
 	}
 	
-	public static boolean correctLanguageCodeFormat(String code)
+	public static boolean incorrectLanguageCodeFormat(String code)
 	{
-		if(code.length() != 5) return false;
-		if(code.charAt(2) != '-') return false;
+		if(code.length() != 5) return true;
+		if(code.charAt(2) != '-') return true;
 		String sub = code.substring(0, 2);
-		if(!sub.toLowerCase().equals(sub)) return false;
+		if(!sub.toLowerCase().equals(sub)) return true;
 		sub = code.substring(2, 2);
-		return sub.toUpperCase().equals(sub);
+		return !sub.toUpperCase().equals(sub);
 	}
 	
 }

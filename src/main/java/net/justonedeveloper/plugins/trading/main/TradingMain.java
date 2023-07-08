@@ -20,7 +20,7 @@ public final class TradingMain extends JavaPlugin {
 	
 	public static TradingMain main;
 	
-	// For future version: Reload Language feature so server restart is not required
+	// For future version: Reload Language feature so server restart is not required (done?)
 	
 	/**
 	* Permission Overview:
@@ -37,6 +37,7 @@ public final class TradingMain extends JavaPlugin {
 		// Plugin startup logic
 		main = this;
 		Init();
+		GlobalConfig.LoadConfig();
 		Language.Init();
 		// trade command, setting page with privacy and 2fa/double check like in Rocket League
 		Bukkit.getPluginManager().registerEvents(new TradeInventoryEventHandler(), this);

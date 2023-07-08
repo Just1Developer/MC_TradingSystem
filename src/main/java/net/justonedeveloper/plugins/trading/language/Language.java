@@ -1,5 +1,6 @@
 package net.justonedeveloper.plugins.trading.language;
 
+import net.justonedeveloper.plugins.trading.main.GlobalConfig;
 import net.justonedeveloper.plugins.trading.main.TradeCommand;
 import net.justonedeveloper.plugins.trading.main.TradingMain;
 import net.justonedeveloper.plugins.trading.settings.TradeSettings;
@@ -19,7 +20,7 @@ import java.util.UUID;
 public class Language {
 	
 	static File folder = new File(TradingMain.main.getDataFolder(), "Languages/");
-	public static final String DefaultLanguage = "en-US";
+	public static String DefaultLanguage = "en-US";
 	private static final List<String> LanguageIDs = new ArrayList<>();
 	private static final HashMap<String, Language> Languages = new HashMap<>();
 	private static final String DefaultValueString = "§cunknown";
@@ -33,12 +34,19 @@ public class Language {
 		{
 			new Language(DefaultLanguage, "English");
 		}
+		else
+		{
+			// Import Default Language First
+			new Language(DefaultLanguage);
+		}
+		
 		File[] files = folder.listFiles();
 		if(files == null) return;
 		for(File f : files)
 		{
 			String code = f.getName().substring(0, f.getName().length() - 4);
-			if(!TradeCommand.correctLanguageCodeFormat(code)) continue;
+			if(TradeCommand.incorrectLanguageCodeFormat(code)) continue;
+			if(LanguageIDs.contains(code)) continue;
 			new Language(code);
 		}
 	}
@@ -76,27 +84,27 @@ public class Language {
 		if(f.exists() && !ignoreExists) return;
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
 		cfg.set("Language.LanguageName", LanguageName);
-		cfg.set("Language.ItemMaterial", Material.DARK_OAK_SIGN.toString());
+		cfg.set("Language.ItemMaterial", GlobalConfig.DefaultLanguageItem.toString());
 		if(code.equals(DefaultLanguage)) cfg.set(Phrase.ERROR_LANGUAGE_WAS_DELETED.toString(), "§cYour selected language (%lang%) has been deleted. Your language has been reset to English.");
 		cfg.set(Phrase.ERROR_LANGUAGE_ALREADY_EXISTS.toString(), "§cSorry, that language already exists.");
 		cfg.set(Phrase.ERROR_LANGUAGE_NOT_EXIST.toString(), "§cSorry, that language does not seem to exist.");
-		cfg.set(Phrase.ERROR_INSUFFICIENT_PERMISSIONS.toString(), "§cSorry, you don't have permissions to do that.");
+		cfg.set(Phrase.ERROR_INSUFFICIENT_PERMISSIONS.toString(), "§cSorry, you don't have permission to do that.");
 		cfg.set(Phrase.ERROR_PLAYER_NOT_ONLINE.toString(), "§cCould not find player §7%name%§c.");
 		cfg.set(Phrase.ERROR_SENDER_NOT_PLAYER.toString(), "§cThis command is for players only!");
 		cfg.set(Phrase.ERROR_PLAYER_IN_SPECTATOR_MODE.toString(), "§cYou cannot accept trades while in spectator mode!");
 		cfg.set(Phrase.ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE.toString(), "§7%name% §7cannot trade right now.");
 		cfg.set(Phrase.ERROR_TRADE_COMMAND_HELP.toString(), "§cError: Unknown usage of /trade. Instead, try:\n§e/trade §7[player]§8, §e/trade <accept, decline, cancel> §7[player] §8or §e/trade language ...");
 		cfg.set(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP.toString(), "§cError: Unknown usage of /trade language. Instead, try:\n§e/trade language <create/reload/edit/reset/delete> <LanguageCode> §7[for create: LanguageName]");
-		cfg.set(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP_CREATE.toString(), "§cError: Unknown usage of /trade language. Instead, try:\n§e/trade language create <LanguageCode> <LanguageName>");
-		cfg.set(Phrase.ERROR_INCORRECT_LANGUAGE_CODE_FORMAT.toString(), "§cError: Incorrect Language Code Format. The correct format is: §exx-XX§c.\n§cFor example: §7en-US §cor §7de-DE§c.");
+		cfg.set(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP_CREATE.toString(), "§cError: Unknown usage of /trade language create. Instead, try:\n§e/trade language create <LanguageCode> <LanguageName>");
+		cfg.set(Phrase.ERROR_INCORRECT_LANGUAGE_CODE_FORMAT.toString(), "§cError: Incorrect Language Code format. The correct format is: §exx-XX§c.\n§cFor example: §7en-US §cor §7de-DE§c.");
 		cfg.set(Phrase.ERROR_MESSAGE_CANNOT_DELETE_DEFAULT_LANGUAGE.toString(), "§4§lError: Cannot delete default language!");
-		cfg.set(Phrase.SUCCESS_LANGUAGE_CREATED.toString(), "§aSuccess! §eYou created the language %lang% §7(%langName%)§e.");
+		cfg.set(Phrase.SUCCESS_LANGUAGE_CREATED.toString(), "§aSuccess! §eYou created the language §c%lang% §7(%langName%)§e.");
 		cfg.set(Phrase.SUCCESS_LANGUAGE_RELOADED.toString(), "§eReloaded language §7%lang%§e.");
 		cfg.set(Phrase.TRADE_DENY_WITH_SELF.toString(), "§cYou cannot trade with yourself.");
 		cfg.set(Phrase.TRADE_DENY_NO_ACCEPT.toString(), "§cThis player does not allow trade requests.");
-		cfg.set(Phrase.TRADE_DENY_ALREADY_PENDING.toString(), "§cYou already have a pending trade offer to this person.");
-		cfg.set(Phrase.TRADE_DENY_TRY_ACCEPT_NO_OFFER.toString(), "§cYou have no pending trade offer from %name%");
-		cfg.set(Phrase.TRADE_DENY_TRY_CANCEL_NO_OFFER.toString(), "§cYou have no pending trade offer to %name%");
+		cfg.set(Phrase.TRADE_DENY_ALREADY_PENDING.toString(), "§cYou already have a pending trade offer to §7%name%§c.");
+		cfg.set(Phrase.TRADE_DENY_TRY_ACCEPT_NO_OFFER.toString(), "§cYou have no pending trade offer from §7%name%§c.");
+		cfg.set(Phrase.TRADE_DENY_TRY_CANCEL_NO_OFFER.toString(), "§cYou have no pending trade offer to §7%name%§c.");
 		// Items
 		cfg.set(Phrase.ITEM_NAME_CONFIRM_TRADE.toString(), "§c§lConfirm Trade");
 		cfg.set(Phrase.ITEM_NAME_TRADE_CONFIRMED.toString(), "§a§lTrade confirmed");
@@ -107,17 +115,17 @@ public class Language {
 		// Trade Request Messages
 		cfg.set(Phrase.TRADE_SENT_MESSAGE_BASE.toString(), "§eYou invited §7%name% §eto trade. They have §7%seconds% §eseconds to accept.");
 		cfg.set(Phrase.TRADE_SENT_MESSAGE_CANCEL.toString(), "TAKE BACK");
-		cfg.set(Phrase.TRADE_SENT_MESSAGE_HOVER_CANCEL.toString(), "§aClick to rescind trade offer");
+		cfg.set(Phrase.TRADE_SENT_MESSAGE_HOVER_CANCEL.toString(), "§8Click to rescind trade offer");
 		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_BASE.toString(), "§eYou have been invited to trade with §7%name%§e. You have §7%seconds% §eseconds to accept.");
 		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_ACCEPT.toString(), "ACCEPT TRADE");
 		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_DECLINE.toString(), "DECLINE TRADE");
 		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT.toString(), "§8Click to accept trade");
 		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_HOVER_DECLINE.toString(), "§8Click to decline trade");
 		// Trade Offer Results
-		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT.toString(), "§e%name% §aaccepted §eyour trade request");
-		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED.toString(), "§eYou §aaccepted §ethe trade request from §7%name%");
-		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_SENT.toString(), "§e%name% §4declined §eyour trade request");
-		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_RECEIVED.toString(), "§eYou §4declined §ethe trade request from §7%name%");
+		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT.toString(), "§e%name% §aaccepted §eyour trade request.");
+		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED.toString(), "§eYou §aaccepted §ethe trade request from §7%name%.");
+		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_SENT.toString(), "§e%name% §4declined §eyour trade request.");
+		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_RECEIVED.toString(), "§eYou §4declined §ethe trade request from §7%name%.");
 		cfg.set(Phrase.TRADE_OFFER_CANCELLED_SUCCESS.toString(), "§eYou §4cancelled §ethe trade request to §7%name%§e.");
 		// Trade Inventory
 		cfg.set(Phrase.TRADE_INVENTORY_TITLE.toString(), "§8Trade with %name%");
@@ -146,7 +154,7 @@ public class Language {
 		cfg.set(Phrase.TRADE_LANG_SETTINGS_ADMIN_EDIT_LANGUAGE_NAME.toString(), "§eEdit Language");
 		cfg.set(Phrase.TRADE_LANG_SETTINGS_NEXT_PAGE_NAME.toString(), "§7Next Page");
 		cfg.set(Phrase.TRADE_LANG_SETTINGS_PREV_PAGE_NAME.toString(), "§7Previous Page");
-		cfg.set(Phrase.TRADE_LANG_SETTINGS_CHANGED_LANGUAGE_MESSAGE.toString(), "§eChanged Language to %lang%§e.");
+		cfg.set(Phrase.TRADE_LANG_SETTINGS_CHANGED_LANGUAGE_MESSAGE.toString(), "§eChanged Language to §7%lang%§e.");
 		// Edit Language Inventory
 		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_TITLE.toString(), "§8Editing Language §d§l%lang%");
 		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_NAME.toString(), "§eChange Language Material");
@@ -155,14 +163,15 @@ public class Language {
 		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_DELETE_LANG_LORE.toString(), "§c§lThis action cannot be undone.\n§c§lShift-click to delete.");
 		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_RESET_LANG_NAME.toString(), "§c§lReset Language: %langName% | ");
 		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_RESET_LANG_LORE.toString(), "§e§lThis action cannot be undone.\n§e§lShift-click to reset.");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_NAME.toString(), "§8§lCannot Delete Language: %lang%");
+		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_NAME.toString(), "§8§lCannot delete language: §c%lang%");
 		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_LORE.toString(), "§7§lCannot delete the default language.");
 		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_NAME.toString(), "§cBack to Languages");
 		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_LORE.toString(), "§7Page %page%");
 		// Edit Language Messages
-		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_LANG_DELETED.toString(), "§cDeleted Language §4§l%langName% §7(%lang%)");
-		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_ITEM_UPDATED.toString(), "§eUpdated Item for §d§l%langName%");
-		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_LANG_RESET.toString(), "§cReset Language §e§l%langName% §7(%lang%)§c.");
+		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_LANG_DELETED.toString(), "§cDeleted language §4§l%langName% §7(%lang%)§c.");
+		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_ITEM_UPDATED.toString(), "§eUpdated Item for §d§l%langName%§e.");
+		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_LANG_RESET.toString(), "§cReset language §e§l%langName% §7(%lang%)§c.");
+		// XP-Trading
 		
 		try {
 			cfg.save(f);
@@ -226,6 +235,10 @@ public class Language {
 	{
 		this.LanguageCode = LanguageCode;
 		if(LanguageIDs.contains(LanguageCode)) return;
+		/*{
+			Languages.remove(LanguageCode);
+			LanguageIDs.remove(LanguageCode);
+		}*/
 		Languages.put(LanguageCode, this);
 		LanguageIDs.add(LanguageCode);
 		Dictionary = new HashMap<>();
@@ -244,7 +257,13 @@ public class Language {
 		for (Phrase phrase : Phrase.values())
 		{
 			String s = cfg.getString(phrase.toString());
-			if(s == null) s = DefaultValueString;
+			if(s == null)
+			{
+				if(code.equals(DefaultLanguage)) s = DefaultValueString;
+				else if(phrase == Phrase.ERROR_LANGUAGE_WAS_DELETED) continue;
+				else s = getPhrase(phrase);		// Get Default Language Phrase
+				try { cfg.set(phrase.toString(), s); cfg.save(f); } catch (IOException ignored) { }
+			}
 			Dictionary.put(phrase, s);
 		}
 		this.LanguageName = cfg.getString("Language.LanguageName");
