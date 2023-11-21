@@ -1,5 +1,5 @@
 name: TradingPlugin
-version: '1.1-RELEASE'
+version: '1.2-RELEASE'
 main: net.justonedeveloper.plugins.trading.main.TradingMain
 api-version: 1.16
 prefix: JustOneDeveloper's Trading System
