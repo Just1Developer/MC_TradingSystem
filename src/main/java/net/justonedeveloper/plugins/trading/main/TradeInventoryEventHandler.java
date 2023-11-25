@@ -119,6 +119,30 @@ public class TradeInventoryEventHandler implements Listener {
 			e.setCancelled(true);
 			return;
 		}
+
+		if (e.getClick() == ClickType.NUMBER_KEY)
+		{
+			//int hotbarSlot = e.getHotbarButton();
+			//ItemStack hotbarItem = e.getWhoClicked().getInventory().getItem(hotbarSlot);
+
+			// We want the item in the slot and the item in the hotbar. Cancel the swap if it's illegal.
+			// First, determine if the Trade inventory was manipulated.
+			if(e.getClickedInventory().equals(e.getInventory()))
+			{
+				// Cannot be illegal swap. Return immediately.
+				return;
+			}
+
+			// If has confirmed or illegal slots, block action
+			if(col > 3 || row == 0 || row >= 4 || HasConfirmed)
+			{
+				e.setCancelled(true);
+				return;
+			}
+
+			// If legal (not cancelled), update clicked slot, no cancel
+			trade.SyncSlotFor(uuid, slot);
+		}
 		
 		if(e.isShiftClick())
 		{
