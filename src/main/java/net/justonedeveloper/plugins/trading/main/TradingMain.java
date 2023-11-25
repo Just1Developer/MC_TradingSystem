@@ -80,7 +80,7 @@ public final class TradingMain extends JavaPlugin {
 		ItemStack it = new ItemStack(Material.LIME_STAINED_GLASS_PANE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
-		m.setDisplayName(Language.get(uuid, Phrase.ITEM_NAME_CONFIRM_TRADE));
+		m.setDisplayName(Language.get(uuid, Phrase.ITEM_NAME_TRADE_CONFIRMED));
 		m.setLore(Collections.singletonList(Language.get(uuid, Phrase.ITEM_LORE_CLICK_TO_RESCIND)));
 		it.setItemMeta(m);
 		return it;
@@ -104,6 +104,86 @@ public final class TradingMain extends JavaPlugin {
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
 		m.setDisplayName(Language.get(uuid, Phrase.ITEM_NAME_PROCESSING_TRADE));
+		it.setItemMeta(m);
+		return it;
+	}
+	
+	// XP Trading
+	
+	// If less than the target value (e.g. 10) is available, the String will change to value/Maxvalue, so if its meant for 10 but we have 5 the method returns "5/10", if we have 10 or more it just returns 10
+	public static String stringOf(int actualGivenValue, int actualTargetValue)
+	{
+		return (actualGivenValue < actualTargetValue ? actualGivenValue + "/" + actualTargetValue : "" + actualTargetValue);
+	}
+	
+	public static ItemStack getXPTradingPlusOne(Player player, int points) { return getXPTradingPlusOne(player == null ? null : player.getUniqueId(), points); }
+	public static ItemStack getXPTradingPlusOne(UUID uuid, int points)
+	{
+		ItemStack it = new ItemStack(Material.LIME_STAINED_GLASS_PANE, 1);
+		ItemMeta m = it.getItemMeta();
+		assert m != null;
+		m.setDisplayName("§a§lAdd XP");//Language.get(uuid, Phrase.XP_TRADING_));
+		m.setLore(Arrays.asList("§7Click: +" + stringOf(points, 1) + " XP", "§7Shift-Click: +" + stringOf(points, 10) + " XP"));
+		it.setItemMeta(m);
+		return it;
+	}
+	
+	public static ItemStack getXPTradingPlusTen(Player player, int points, int levelDiff) { return getXPTradingPlusTen(player == null ? null : player.getUniqueId(), points, levelDiff); }
+	public static ItemStack getXPTradingPlusTen(UUID uuid, int points, int levelDiff)
+	{
+		ItemStack it = new ItemStack(Material.GREEN_STAINED_GLASS_PANE, 1);
+		ItemMeta m = it.getItemMeta();
+		assert m != null;
+		m.setDisplayName("§a§lAdd XP");//Language.get(uuid, Phrase.XP_TRADING_));
+		m.setLore(Arrays.asList("§7Click: +1 Level §c(+" + stringOf(points, levelDiff) + " XP)", "§eShift-Click: All of it §c(+" + points + " XP)"));
+		it.setItemMeta(m);
+		return it;
+	}
+	
+	public static ItemStack getXPTradingMinusOne(Player player, int points) { return getXPTradingMinusOne(player == null ? null : player.getUniqueId(), points); }
+	public static ItemStack getXPTradingMinusOne(UUID uuid, int points)
+	{
+		ItemStack it = new ItemStack(Material.ORANGE_STAINED_GLASS_PANE, 1);
+		ItemMeta m = it.getItemMeta();
+		assert m != null;
+		m.setDisplayName("§c§lRemove XP");//Language.get(uuid, Phrase.XP_TRADING_));
+		m.setLore(Arrays.asList("§7Click: -" + stringOf(points, 1) + " XP", "§7Shift-Click: -" + stringOf(points, 10) + " XP"));
+		it.setItemMeta(m);
+		return it;
+	}
+	
+	public static ItemStack getXPTradingMinusTen(Player player, int points, int levelDiff) { return getXPTradingMinusTen(player == null ? null : player.getUniqueId(), points, levelDiff); }
+	public static ItemStack getXPTradingMinusTen(UUID uuid, int points, int levelDiff)
+	{
+		ItemStack it = new ItemStack(Material.RED_STAINED_GLASS_PANE, 1);
+		ItemMeta m = it.getItemMeta();
+		assert m != null;
+		m.setDisplayName("§c§lRemove XP");//Language.get(uuid, Phrase.XP_TRADING_));
+		m.setLore(Arrays.asList("§7Click: -1 Level §c(-" + stringOf(points, levelDiff) + " XP)", "§eShift-Click: All of it §c(-" + points + " XP)"));
+		it.setItemMeta(m);
+		return it;
+	}
+	
+	public static ItemStack getXPActivate(Player player) { return getXPActivate(player == null ? null : player.getUniqueId()); }
+	public static ItemStack getXPActivate(UUID uuid)
+	{
+		ItemStack it = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
+		ItemMeta m = it.getItemMeta();
+		assert m != null;
+		m.setDisplayName("§e§lEdit Traded XP");//Language.get(uuid, Phrase.XP_TRADING_));
+		m.setLore(Collections.singletonList("§7Click to add/remove XP"));
+		it.setItemMeta(m);
+		return it;
+	}
+	
+	public static ItemStack getXPDeactivate(Player player) { return getXPDeactivate(player == null ? null : player.getUniqueId()); }
+	public static ItemStack getXPDeactivate(UUID uuid)
+	{
+		ItemStack it = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
+		ItemMeta m = it.getItemMeta();
+		assert m != null;
+		m.setDisplayName("§a§lConfirm XP Trade");//Language.get(uuid, Phrase.XP_TRADING_));
+		m.setLore(Collections.singletonList("§7Click to confirm XP"));
 		it.setItemMeta(m);
 		return it;
 	}

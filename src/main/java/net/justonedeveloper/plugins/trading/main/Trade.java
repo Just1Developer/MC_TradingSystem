@@ -10,6 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
@@ -19,6 +20,10 @@ public class Trade {
 	// I'll think of a smart way on how to do this
 	Inventory TradeInventoryPlayer1, TradeInventoryPlayer2;
 	UUID uuidPlayer1, uuidPlayer2;
+	int tradedXPPlayer1 = 0, tradedXPPlayer2 = 0;
+	int totalXPPlayer1, totalXPPlayer2;
+	int deltaLevelXPToNextLevelPlayer1, deltaLevelXPToNextLevelPlayer2;
+	int deltaLevelXPToPrevLevelPlayer1, deltaLevelXPToPrevLevelPlayer2;
 	
 	public static final int[] OwnConfirmSlots = { 36, 37, 38, 39 };
 	public static final int[] OtherConfirmSlots = { 41, 42, 43, 44 };
@@ -34,12 +39,106 @@ public class Trade {
 		uuidPlayer2 = Player2.getUniqueId();
 		TradeCommand.clearPendingTrades(uuidPlayer1);
 		TradeCommand.clearPendingTrades(uuidPlayer2);
+		setTotalPlayer1Exp(Player1);
+		setTotalPlayer2Exp(Player2);
 		TradeInventoryEventHandler.Trades.put(uuidPlayer1, this);
 		TradeInventoryEventHandler.Trades.put(uuidPlayer2, this);
 		TradeInventoryPlayer1 = GenerateTradeInventory(Player1, Player2.getName());
 		TradeInventoryPlayer2 = GenerateTradeInventory(Player2, Player1.getName());
 		Player1.openInventory(TradeInventoryPlayer1);
 		Player2.openInventory(TradeInventoryPlayer2);
+	}
+	
+	public void setPlayerExp(Player Player)
+	{
+		if(Player.getUniqueId().equals(uuidPlayer1)) setTotalPlayer1Exp(Player);
+		else if(Player.getUniqueId().equals(uuidPlayer2)) setTotalPlayer2Exp(Player);
+	}
+	public void setTotalPlayer1Exp(Player Player1)
+	{
+		int[] p1_xp = XPCalc.pointsOf(Player1);
+		Bukkit.broadcastMessage("§dGot Data for " + Player1.getName() + ": [0]=" + p1_xp[0] + " - [1]=" + p1_xp[1] + " - [2]=" + p1_xp[2]);
+		totalXPPlayer1 = p1_xp[0];
+		//deltaLevelXPToPrevLevelPlayer1 = p1_xp[1];	// Deltas are updated in setItems, which is the point
+		//deltaLevelXPToNextLevelPlayer1 = p1_xp[2];
+	}
+	public void setTotalPlayer2Exp(Player Player2)
+	{
+		int[] p2_xp = XPCalc.pointsOf(Player2);
+		Bukkit.broadcastMessage("§dGot Data for " + Player2.getName() + ": [0]=" + p2_xp[0] + " - [1]=" + p2_xp[1] + " - [2]=" + p2_xp[2]);
+		totalXPPlayer2 = p2_xp[0];
+		//deltaLevelXPToPrevLevelPlayer2 = p2_xp[1];
+		//deltaLevelXPToNextLevelPlayer2 = p2_xp[2];
+	}
+	
+	public void updatePlayerExp(Player Player)
+	{
+		if(Player.getUniqueId().equals(uuidPlayer1)) updatePlayer1Exp(Player);
+		else if(Player.getUniqueId().equals(uuidPlayer2)) updatePlayer2Exp(Player);
+	}
+	public void updatePlayer1Exp(Player Player1)
+	{
+		setTotalPlayer1Exp(Player1);
+		// Make sure traded xp is still possible
+		if(totalXPPlayer1 < tradedXPPlayer1)
+		{
+			setTradedXPPlayer2(Player1, totalXPPlayer1);
+			// Todo send error message & notify other player that xp has been traded. Also cancel countdown if its running
+			Player1.sendMessage("§eYou suck, that's why your exp wasn't enough and was reset to " + totalXPPlayer2 + " (your entire remaining xp lol)");
+		}
+	}
+	public void updatePlayer2Exp(Player Player2)
+	{
+		setTotalPlayer2Exp(Player2);
+		// Make sure traded xp is still possible
+		if(totalXPPlayer2 < tradedXPPlayer2)
+		{
+			setTradedXPPlayer2(Player2, totalXPPlayer2);
+			// Todo send error message & notify other player that xp has been traded. Also cancel countdown if its running
+			Player2.sendMessage("§cYou suck, that's why your exp wasn't enough and was reset to " + totalXPPlayer2 + " (your entire remaining xp lol)");
+		}
+	}
+	
+	public void setTradedXPPlayer1(Player p, int XP)
+	{
+		tradedXPPlayer1 = XP;
+		if(totalXPPlayer1 < tradedXPPlayer1) tradedXPPlayer1 = totalXPPlayer1;
+		else if(tradedXPPlayer1 < 0) tradedXPPlayer1 = 0;
+		updatePlayer1Exp(p);
+	}
+	public void setTradedXPPlayer2(Player p, int XP)
+	{
+		tradedXPPlayer2 = XP;
+		if(totalXPPlayer2 < tradedXPPlayer2) tradedXPPlayer2 = totalXPPlayer2;
+		else if(tradedXPPlayer2 < 0) tradedXPPlayer2 = 0;
+		updatePlayer2Exp(p);
+	}
+	private void addTradedXPPlayer1(Player p, int XP) { setTradedXPPlayer1(p, tradedXPPlayer1 + XP); }
+	private void addTradedXPPlayer2(Player p, int XP) { setTradedXPPlayer2(p, tradedXPPlayer2 + XP); }
+	private void removeTradedXPPlayer1(Player p, int XP) { setTradedXPPlayer1(p, tradedXPPlayer1 - XP); }
+	private void removeTradedXPPlayer2(Player p, int XP) { setTradedXPPlayer2(p, tradedXPPlayer2 - XP); }
+	
+	public void addTradedXP(Player p, int XP)
+	{
+		if(p.getUniqueId().equals(uuidPlayer1))
+		{
+			setTradedXPPlayer1(p, tradedXPPlayer1 + XP);
+		}
+		else if(p.getUniqueId().equals(uuidPlayer2))
+		{
+			setTradedXPPlayer2(p, tradedXPPlayer2 + XP);
+		}
+	}
+	public void removeTradedXP(Player p, int XP)
+	{
+		if(p.getUniqueId().equals(uuidPlayer1))
+		{
+			setTradedXPPlayer1(p, tradedXPPlayer1 - XP);
+		}
+		else if(p.getUniqueId().equals(uuidPlayer2))
+		{
+			setTradedXPPlayer2(p, tradedXPPlayer2 - XP);
+		}
 	}
 	
 	public static Inventory GenerateTradeInventory(Player Trader, String OtherTraderName)
@@ -56,7 +155,88 @@ public class Trade {
 		{
 			inv.setItem(i * 9 + 4, EmptyStack);	// Middle
 		}
+		
+		inv.setItem(22, TradingMain.getXPActivate(Trader));	// Add XP
 		return inv;
+	}
+	
+	public void setXPTradeItemBar(Player p)
+	{
+		Inventory inv = getInventoryOf(p);
+		int xp = getTradedXPOf(p);
+		int pxp = getTotalXPOf(p);
+		int resXP = pxp - xp;
+		int[] XPcalc = XPCalc.levelOf(resXP);
+		if(p.getUniqueId().equals(uuidPlayer1))
+		{
+			this.deltaLevelXPToPrevLevelPlayer1 = XPcalc[1];
+			this.deltaLevelXPToNextLevelPlayer1 = XPcalc[2];
+		}
+		else if(p.getUniqueId().equals(uuidPlayer2))
+		{
+			this.deltaLevelXPToPrevLevelPlayer2 = XPcalc[1];
+			this.deltaLevelXPToNextLevelPlayer2 = XPcalc[2];
+		}
+		inv.setItem(0, TradingMain.getXPTradingMinusTen(p, xp, XPcalc[2]));	// To next
+		inv.setItem(1, TradingMain.getXPTradingMinusOne(p, xp));
+		inv.setItem(2, getXPTradingCurrent(p, XPcalc[0]));
+		inv.setItem(3, TradingMain.getXPTradingPlusOne(p, resXP));
+		inv.setItem(4, TradingMain.getXPTradingPlusTen(p, resXP, XPcalc[1]));	// To prev
+		/*
+		p.sendMessage("XP: " + xp);
+		p.sendMessage("Your XP: " + p.getTotalExperience());
+		p.sendMessage("Your Exp: " + p.getExp());
+		p.sendMessage("Your Level: " + p.getLevel());
+		p.sendMessage("Your Calculated Level: " + XPCalc.levelOf(p).Key);
+		 */
+	}
+	
+	private ItemStack getXPTradingCurrent(Player p, int newLevel)
+	{
+		int xp = getTradedXPOf(p);
+		ItemStack it = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
+		ItemMeta m = it.getItemMeta();
+		assert m != null;
+		m.setDisplayName("§e§lCurrent XP");//Language.get(uuid, Phrase.XP_TRADING_));
+		m.setLore(Arrays.asList("§7XP Traded: §e" + xp, "§7Resulting Level: §c" + newLevel));	// Old:  XPCalc.levelOf(p.getTotalExperience() - xp).Key));
+		it.setItemMeta(m);
+		return it;
+	}
+	
+	private int getTradedXPOf(Player p) { return getTradedXPOf(p.getUniqueId()); }
+	private int getTradedXPOf(int player) { return getTradedXPOf(player == 2 ? uuidPlayer2 : uuidPlayer1); }
+	private int getTradedXPOf(UUID uuid)
+	{
+		if(uuid.equals(uuidPlayer1)) return tradedXPPlayer1;
+		if(uuid.equals(uuidPlayer2)) return tradedXPPlayer2;
+		return 0;
+	}
+	
+	public int getTotalXPOf(Player p) { return getTotalXPOf(p.getUniqueId()); }
+	public int getTotalXPOf(int player) { return getTotalXPOf(player == 2 ? uuidPlayer2 : uuidPlayer1); }
+	public int getTotalXPOf(UUID uuid)
+	{
+		if(uuid.equals(uuidPlayer1)) return totalXPPlayer1;
+		if(uuid.equals(uuidPlayer2)) return totalXPPlayer2;
+		return 0;
+	}
+	
+	public int getDeltaLevelXPToNextLevelOf(Player p) { return getDeltaLevelXPToNextLevelOf(p.getUniqueId()); }
+	public int getDeltaLevelXPToNextLevelOf(int player) { return getDeltaLevelXPToNextLevelOf(player == 2 ? uuidPlayer2 : uuidPlayer1); }
+	public int getDeltaLevelXPToNextLevelOf(UUID uuid)
+	{
+		if(uuid.equals(uuidPlayer1)) return deltaLevelXPToNextLevelPlayer1;
+		if(uuid.equals(uuidPlayer2)) return deltaLevelXPToNextLevelPlayer2;
+		return 0;
+	}
+	
+	public int getDeltaLevelXPToPrevLevelOf(Player p) { return getDeltaLevelXPToPrevLevelOf(p.getUniqueId()); }
+	public int getDeltaLevelXPToPrevLevelOf(int player) { return getDeltaLevelXPToPrevLevelOf(player == 2 ? uuidPlayer2 : uuidPlayer1); }
+	public int getDeltaLevelXPToPrevLevelOf(UUID uuid)
+	{
+		if(uuid.equals(uuidPlayer1)) return deltaLevelXPToPrevLevelPlayer1;
+		if(uuid.equals(uuidPlayer2)) return deltaLevelXPToPrevLevelPlayer2;
+		return 0;
 	}
 	
 	public List<ItemStack> GetTradedItems(Player Player) { return GetTradedItems(Player.getUniqueId()); }

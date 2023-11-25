@@ -2,12 +2,14 @@ package net.justonedeveloper.plugins.trading.main;
 
 import net.justonedeveloper.plugins.trading.language.Language;
 import net.justonedeveloper.plugins.trading.language.Phrase;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
@@ -34,12 +36,54 @@ public class TradeInventoryEventHandler implements Listener {
 		if(e.getClickedInventory() == null) return;
 		if(!Trades.containsKey(e.getWhoClicked().getUniqueId())) return;	// Player has trade inventory open
 		
-		UUID uuid = e.getWhoClicked().getUniqueId();
+		Player p  = (Player) e.getWhoClicked();
+		UUID uuid = p.getUniqueId();
 		Trade trade = Trades.get(uuid);
-		int slot = e.getSlot();
+		int slot = e.getRawSlot();
 		int row = slot / 9;
 		int col = slot % 9;
 		boolean HasConfirmed = trade.IsConfirmed(uuid);
+		
+		if(slot == 22)
+		{
+			e.setCancelled(true);
+			if(!HasConfirmed)
+			{
+				trade.setXPTradeItemBar(p);
+			}
+			return;
+		}
+		else if(slot < 5 && e.getCurrentItem() != null && !e.getCurrentItem().getType().isAir() && !e.getCurrentItem().equals(Trade.EmptyStack))
+		{
+			e.setCancelled(true);
+			int delta;
+			switch (slot)
+			{
+				case 0:
+					// -level oder -all
+					delta = e.isShiftClick() ? -trade.getTotalXPOf(uuid) : -trade.getDeltaLevelXPToNextLevelOf(uuid);	// Remove XP -> Removed from Trade -> Added, so to next level
+					break;
+				case 1:
+					// -1 oder -10
+					delta = e.isShiftClick() ? -10 : -1;
+					break;
+				case 3:
+					// +1 oder +10
+					delta = e.isShiftClick() ? 10 : 1;
+					break;
+				case 4:
+					// +level oder +all
+					delta = e.isShiftClick() ? trade.getTotalXPOf(uuid) : trade.getDeltaLevelXPToPrevLevelOf(uuid);
+					break;
+				default:
+					delta = 0;
+					break;
+			}
+			Bukkit.broadcastMessage("§5Click >> Player: " + p.getName() + " | Delta: " + delta);
+			trade.addTradedXP(p, delta);
+			trade.setXPTradeItemBar(p);
+			return;
+		}
 		
 		if(e.getClick() == ClickType.DOUBLE_CLICK)
 		{
@@ -129,6 +173,18 @@ public class TradeInventoryEventHandler implements Listener {
 	}
 	
 	public static Set<Integer> IllegalSlots = new HashSet<>();
+	
+	@EventHandler
+	public void PlayerXPChangedEvent(PlayerExpChangeEvent e)
+	{
+		if(!Trades.containsKey(e.getPlayer().getUniqueId())) return;	// Player has trade inventory open
+		
+		Player p  = e.getPlayer();
+		UUID uuid = p.getUniqueId();
+		Trade trade = Trades.get(uuid);
+		
+		trade.updatePlayerExp(p);
+	}
 	
 	@EventHandler
 	public void OnInventoryDrag(InventoryDragEvent e)

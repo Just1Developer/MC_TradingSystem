@@ -85,7 +85,7 @@ public class Language {
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
 		cfg.set("Language.LanguageName", LanguageName);
 		cfg.set("Language.ItemMaterial", GlobalConfig.DefaultLanguageItem.toString());
-		if(code.equals(DefaultLanguage)) cfg.set(Phrase.ERROR_LANGUAGE_WAS_DELETED.toString(), "§cYour selected language (%lang%) has been deleted. Your language has been reset to English.");
+		cfg.set(Phrase.ERROR_LANGUAGE_WAS_DELETED.toString(), "§cYour selected language (%lang%) has been deleted. Your language has been reset to English.");
 		cfg.set(Phrase.ERROR_LANGUAGE_ALREADY_EXISTS.toString(), "§cSorry, that language already exists.");
 		cfg.set(Phrase.ERROR_LANGUAGE_NOT_EXIST.toString(), "§cSorry, that language does not seem to exist.");
 		cfg.set(Phrase.ERROR_INSUFFICIENT_PERMISSIONS.toString(), "§cSorry, you don't have permission to do that.");
@@ -260,7 +260,6 @@ public class Language {
 			if(s == null)
 			{
 				if(code.equals(DefaultLanguage)) s = DefaultValueString;
-				else if(phrase == Phrase.ERROR_LANGUAGE_WAS_DELETED) continue;
 				else s = getPhrase(phrase);		// Get Default Language Phrase
 				try { cfg.set(phrase.toString(), s); cfg.save(f); } catch (IOException ignored) { }
 			}
