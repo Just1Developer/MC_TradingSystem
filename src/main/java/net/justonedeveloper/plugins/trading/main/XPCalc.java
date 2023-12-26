@@ -86,7 +86,7 @@ public class XPCalc {
 			levelPoints += delta;
 		}
 		// if(levelPoints == 5) levelPoints = 7;
-		xp_points += Math.round(levelPoints * lvlDeltaPoints);
+		xp_points += (int) Math.round(levelPoints * lvlDeltaPoints);
 		return new int[] { xp_points, levelPoints - delta, levelPoints };
 	}
 	
