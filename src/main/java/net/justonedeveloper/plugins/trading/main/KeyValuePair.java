@@ -2,6 +2,8 @@ package net.justonedeveloper.plugins.trading.main;
 
 import org.bukkit.Bukkit;
 
+import java.util.Objects;
+
 public class KeyValuePair<TK, TV> {
 	
 	public TK Key;
@@ -13,8 +15,16 @@ public class KeyValuePair<TK, TV> {
 		this.Value = Value;
 	}
 	
-	public boolean Equals(KeyValuePair<TK, TV> reference)
-	{
-		return reference.Key.equals(Key) && reference.Value.equals(Value);
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		KeyValuePair<?, ?> that = (KeyValuePair<?, ?>) o;
+		return Objects.equals(Key, that.Key) && Objects.equals(Value, that.Value);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(Key, Value);
 	}
 }

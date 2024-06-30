@@ -23,12 +23,9 @@ public class XPCalc {
  		if(xp_points <= 352)
 		{
  			double lvl = Math.sqrt(xp_points + 9) - 3;
- 			//xp_points -= Math.pow(lvl, 2) + 6*lvl;							// Bug: Some stuff is NumberAbove.05 or something, like 23 -> 24.07
-			double balance = (0.1 * (16-lvl));
+ 			double balance = (0.1 * (16-lvl));
 			double lvlDownPoints = lvl == 0 ? 0 : 2 * (lvl-1) + 7 - balance;				// Lvl - 1 since that gives us xp from lvl to lvl+1, but we want lvl to lvl-1, so naturally: lvl-1 -> lvl
 			double lvlUpPoints = 2 * lvl + 7 - balance;				// Now we want to next lvl
-			
-			//Bukkit.broadcastMessage("§9XP-Points: " + xp_points + " | LVL: " + lvl + " (" + ((int) lvl) + ") | DownPts: " + lvlDownPoints + " (" + ((int) lvlDownPoints) + ") | UpPts: " + lvlUpPoints + " (" + ((int) lvlUpPoints) + ")");
 			
 			return new int[] { (int) lvl, (int) lvlDownPoints, (int) lvlUpPoints };
         }
@@ -37,7 +34,6 @@ public class XPCalc {
 		if(xp_points <= 1507)
 		{
 			double lvl = 8.1 + Math.sqrt(0.4 * (xp_points - (195.975)));
-			//xp_points -= 2.5 * Math.pow(lvl, 2) - 40.5 * lvl + 360;
 			double lvlDownPoints = 5 * (lvl-1) - 38;
 			double lvlUpPoints = 5 * lvl - 38;				// Now we want to next lvl
 			return new int[] { (int) lvl, (int) lvlDownPoints, (int) lvlUpPoints };
@@ -45,7 +41,6 @@ public class XPCalc {
 		
 		// 1508+ (Levels 31+)
 		double lvl = 18.0555 + Math.sqrt(0.2222222 * (xp_points - (752.986111)));
-		//xp_points -= 4.5 * Math.pow(lvl, 2) - 162.5 * lvl + 2220;
 		double lvlDownPoints = 9 * (lvl-1) - 158;
 		double lvlUpPoints = 9 * lvl - 158;				// Now we want to next lvl
 		return new int[] { (int) lvl, (int) lvlDownPoints, (int) lvlUpPoints };

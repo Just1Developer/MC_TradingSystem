@@ -93,7 +93,6 @@ public class Trade {
 	public void setTotalPlayer1Exp(Player Player1)
 	{
 		int[] p1_xp = XPCalc.pointsOf(Player1);
-		Bukkit.broadcastMessage("§dGot Data for " + Player1.getName() + ": [0]=" + p1_xp[0] + " - [1]=" + p1_xp[1] + " - [2]=" + p1_xp[2]);
 		totalXPPlayer1 = p1_xp[0];
 		//deltaLevelXPToPrevLevelPlayer1 = p1_xp[1];	// Deltas are updated in setItems, which is the point
 		//deltaLevelXPToNextLevelPlayer1 = p1_xp[2];
@@ -101,7 +100,6 @@ public class Trade {
 	public void setTotalPlayer2Exp(Player Player2)
 	{
 		int[] p2_xp = XPCalc.pointsOf(Player2);
-		Bukkit.broadcastMessage("§dGot Data for " + Player2.getName() + ": [0]=" + p2_xp[0] + " - [1]=" + p2_xp[1] + " - [2]=" + p2_xp[2]);
 		totalXPPlayer2 = p2_xp[0];
 		//deltaLevelXPToPrevLevelPlayer2 = p2_xp[1];
 		//deltaLevelXPToNextLevelPlayer2 = p2_xp[2];
@@ -243,13 +241,6 @@ public class Trade {
 		inv.setItem(4, TradingMain.getXPTradingPlusTen(p, resXP, XPcalc[1]));	// To prev
 		inv.setItem(22, TradingMain.getXPDeactivate(p));
 		setIsPlayerEditingXP(p, true);
-		/*
-		p.sendMessage("XP: " + xp);
-		p.sendMessage("Your XP: " + p.getTotalExperience());
-		p.sendMessage("Your Exp: " + p.getExp());
-		p.sendMessage("Your Level: " + p.getLevel());
-		p.sendMessage("Your Calculated Level: " + XPCalc.levelOf(p).Key);
-		 */
 	}
 	
 	public void setConfirmItemLore(Player p, Phrase phrase) { setConfirmItemLore(p.getUniqueId(), phrase); }

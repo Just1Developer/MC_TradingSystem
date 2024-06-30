@@ -88,7 +88,6 @@ public class TradeInventoryEventHandler implements Listener {
 					delta = 0;
 					break;
 			}
-			Bukkit.broadcastMessage("§5Click >> Player: " + p.getName() + " | Delta: " + delta + " §aIsTrading: " + trade.isEditingXP(p));
 			trade.addTradedXP(p, delta);
 			trade.setXPTradeItemBar(p);
 			return;
