@@ -15,9 +15,126 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Language {
+	
+	private static final Map<Phrase, String> PHRASE_DEFAULTS = new HashMap<>();
+	static {
+		PHRASE_DEFAULTS.put(Phrase.ERROR_LANGUAGE_WAS_DELETED, "§cYour selected language (%lang%) has been deleted. Your language has been reset to English.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_LANGUAGE_ALREADY_EXISTS, "§cSorry, that language already exists.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_LANGUAGE_NOT_EXIST, "§cSorry, that language does not seem to exist.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_INSUFFICIENT_PERMISSIONS, "§cSorry, you don't have permission to do that.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_PLAYER_NOT_ONLINE, "§cCould not find player §7%name%§c.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_SENDER_NOT_PLAYER, "§cThis command is for players only!");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_PLAYER_IN_SPECTATOR_MODE, "§cYou cannot accept trades while in spectator mode!");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE, "§7%name% §7cannot trade right now.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_TRADE_COMMAND_HELP, "§cError: Unknown usage of /trade. Instead, try:\n§e/trade §7[player]§8, §e/trade <accept, decline, cancel> §7[player] §8or §e/trade language ...");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP, "§cError: Unknown usage of /trade language. Instead, try:\n§e/trade language <create/reload/edit/reset/delete> <LanguageCode> §7[for create: LanguageName]");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP_CREATE, "§cError: Unknown usage of /trade language create. Instead, try:\n§e/trade language create <LanguageCode> <LanguageName>");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_INCORRECT_LANGUAGE_CODE_FORMAT, "§cError: Incorrect Language Code format. The correct format is: §exx-XX§c.\n§cFor example: §7en-US §cor §7de-DE§c.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_MESSAGE_CANNOT_DELETE_DEFAULT_LANGUAGE, "§4§lError: Cannot delete default language!");
+		PHRASE_DEFAULTS.put(Phrase.SUCCESS_LANGUAGE_CREATED, "§aSuccess! §eYou created the language §c%lang% §7(%langName%)§e.");
+		PHRASE_DEFAULTS.put(Phrase.SUCCESS_LANGUAGE_RELOADED, "§eReloaded language §7%lang%§e.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_DENY_WITH_SELF, "§cYou cannot trade with yourself.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_DENY_NO_ACCEPT, "§cThis player does not allow trade requests.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_DENY_ALREADY_PENDING, "§cYou already have a pending trade offer to §7%name%§c.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_DENY_TRY_ACCEPT_NO_OFFER, "§cYou have no pending trade offer from §7%name%§c.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_DENY_TRY_CANCEL_NO_OFFER, "§cYou have no pending trade offer to §7%name%§c.");
+		// Items
+		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_CONFIRM_TRADE, "§c§lConfirm Trade");
+		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_TRADE_CONFIRMED, "§a§lTrade confirmed");
+		PHRASE_DEFAULTS.put(Phrase.ITEM_LORE_CLICK_TO_RESCIND, "§cClick to rescind offer");
+		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_PARTNER_NOT_CONFIRMED, "§c§lPartner has not confirmed Trade");
+		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_PARTNER_CONFIRMED, "§a§lPartner has confirmed Trade");
+		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_PROCESSING_TRADE, "§b§lTrading in progress...");
+		// Trade Request Messages
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SENT_MESSAGE_BASE, "§eYou invited §7%name% §eto trade. They have §7%seconds% §eseconds to accept.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SENT_MESSAGE_CANCEL, "TAKE BACK");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SENT_MESSAGE_HOVER_CANCEL, "§8Click to rescind trade offer");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_RECEIVED_MESSAGE_BASE, "§eYou have been invited to trade with §7%name%§e. You have §7%seconds% §eseconds to accept.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_RECEIVED_MESSAGE_ACCEPT, "ACCEPT TRADE");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_RECEIVED_MESSAGE_DECLINE, "DECLINE TRADE");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT, "§8Click to accept trade");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_RECEIVED_MESSAGE_HOVER_DECLINE, "§8Click to decline trade");
+		// Trade Offer Results
+		PHRASE_DEFAULTS.put(Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT, "§e%name% §aaccepted §eyour trade request.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED, "§eYou §aaccepted §ethe trade request from §7%name%.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_SENT, "§e%name% §4declined §eyour trade request.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_RECEIVED, "§eYou §4declined §ethe trade request from §7%name%.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_OFFER_CANCELLED_SUCCESS, "§eYou §4cancelled §ethe trade request to §7%name%§e.");
+		// Trade Inventory
+		PHRASE_DEFAULTS.put(Phrase.TRADE_INVENTORY_TITLE, "§8Trade with %name%");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_INVENTORY_CONCLUSION_TITLE, "§8New Items: Trade with %name%");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_INVENTORY_CLOSE_CANCELLED_MESSAGE, "§cThe trade has been cancelled.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME, "§c[UNKNOWN]");
+		// Settings
+		PHRASE_DEFAULTS.put(Phrase.TRADE_INVENTORY_MESSAGE_OPENING_SETTINGS_INVENTORY, "§eOpening Trading Settings..");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_TITLE, "§8Trade Settings: %name%");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME, "§a§lEnabled");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_LORE, "§8Click to disable");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME, "§c§lDisabled");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_LORE, "§8Click to enable");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_NAME, "§8Inactive");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_LORE, "§8Click to enable");
+		// Settings inventory
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_ACCEPT_NAME, "§aAuto-Accept Trades");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME, "§eTrade on Request");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_DECLINE_NAME, "§cAuto-Decline Trades");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME, "§dAuto-Collect Items");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE, "Items are automatically added to\nyour inventory post-trade.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_SET_LANGUAGE_NAME, "§eSet Language");
+		// Language Inventory
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE, "§8Language Settings | Page %page%");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_BACK_TO_SETTINGS_NAME, "§cBack to Settings");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_ADMIN_EDIT_LANGUAGE_NAME, "§eEdit Language");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_NEXT_PAGE_NAME, "§7Next Page");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_PREV_PAGE_NAME, "§7Previous Page");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_CHANGED_LANGUAGE_MESSAGE, "§eChanged Language to §7%lang%§e.");
+		// Edit Language Inventory
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_TITLE, "§8Editing Language §d§l%lang%");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_NAME, "§eChange Language Material");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_LORE, "§7Click on this with an Item to change the material.");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_DELETE_LANG_NAME, "§4§lDelete Language: %langName% | ");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_DELETE_LANG_LORE, "§c§lThis action cannot be undone.\n§c§lShift-click to delete.");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_RESET_LANG_NAME, "§c§lReset Language: %langName% | ");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_RESET_LANG_LORE, "§e§lThis action cannot be undone.\n§e§lShift-click to reset.");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_NAME, "§8§lCannot delete language: §c%lang%");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_LORE, "§7§lCannot delete the default language.");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_NAME, "§cBack to Languages");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_LORE, "§7Page %page%");
+		// Edit Language Messages
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_MESSAGE_LANG_DELETED, "§cDeleted language §4§l%langName% §7(%lang%)§c.");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_MESSAGE_ITEM_UPDATED, "§eUpdated Item for §d§l%langName%§e.");
+		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_MESSAGE_LANG_RESET, "§cReset language §e§l%langName% §7(%lang%)§c.");
+		// XP-Trading GUI
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_CURRENT_XP_NAME, "§e§lCurrent XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_CURRENT_XP_LORE_1, "§7XP Traded: §e%points%");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_CURRENT_XP_LORE_2, "§7Resulting Level: §c%level%");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_ADD_XP_NAME, "§a§lAdd XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_ADD_XP_LORE_SINGLE, "§7Click: +%points% XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_ADD_XP_LORE_SINGLE_SHIFT, "§7Shift-Click: +%points% XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_ADD_XP_LORE_LEVEL, "§7Click: +1 Level §c(+%points% XP)");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_ADD_XP_LORE_LEVEL_SHIFT, "§eShift-Click: All of it §c(+%points% XP)");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_REMOVE_XP_NAME, "§c§lRemove XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_REMOVE_XP_LORE_SINGLE, "§7Click: -%points% XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_REMOVE_XP_LORE_SINGLE_SHIFT, "§7Shift-Click: -%points% XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_REMOVE_XP_LORE_LEVEL, "§7Click: -1 Level §c(-%points% XP)");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_REMOVE_XP_LORE_LEVEL_SHIFT, "§eShift-Click: All of it §c(-%points% XP)");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_EDIT_TRADED_XP_NAME, "§e§lEdit Traded XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_EDIT_TRADED_XP_LORE, "§7Click to add/remove XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_CONFIRM_TRADED_XP_NAME, "§e§lConfirm Traded XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_CONFIRM_TRADED_XP_LORE, "§7Click to confirm XP");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_OVERVIEW_NAME, "§b§lXP Trade Information");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_OVERVIEW_LORE_SELF, "§7Your traded XP: %points%");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_OVERVIEW_LORE_OTHER, "§7%name% traded XP: %points%");
+		// XP-Trading
+		//PHRASE_DEFAULTS.put(Phrase.XP_TRADING_STILL_EDITING_XP_NO_CONFIRM, "§cCannot confirm trade, you have to confirm your traded XP first!");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_STILL_EDITING_XP_NO_CONFIRM_LORE, "First confirm your traded XP!");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF, "§cYour XP fell below the amount you locked in for the trade, the amount of traded XP has been adjusted accordingly.");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER, "§cYour trade partner changed XP. You may need to re-confirm the trade.");
+	}
 	
 	static File folder = new File(TradingMain.main.getDataFolder(), "Languages/");
 	public static String DefaultLanguage = "en-US";
@@ -85,93 +202,9 @@ public class Language {
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
 		cfg.set("Language.LanguageName", LanguageName);
 		cfg.set("Language.ItemMaterial", GlobalConfig.DefaultLanguageItem.toString());
-		cfg.set(Phrase.ERROR_LANGUAGE_WAS_DELETED.toString(), "§cYour selected language (%lang%) has been deleted. Your language has been reset to English.");
-		cfg.set(Phrase.ERROR_LANGUAGE_ALREADY_EXISTS.toString(), "§cSorry, that language already exists.");
-		cfg.set(Phrase.ERROR_LANGUAGE_NOT_EXIST.toString(), "§cSorry, that language does not seem to exist.");
-		cfg.set(Phrase.ERROR_INSUFFICIENT_PERMISSIONS.toString(), "§cSorry, you don't have permission to do that.");
-		cfg.set(Phrase.ERROR_PLAYER_NOT_ONLINE.toString(), "§cCould not find player §7%name%§c.");
-		cfg.set(Phrase.ERROR_SENDER_NOT_PLAYER.toString(), "§cThis command is for players only!");
-		cfg.set(Phrase.ERROR_PLAYER_IN_SPECTATOR_MODE.toString(), "§cYou cannot accept trades while in spectator mode!");
-		cfg.set(Phrase.ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE.toString(), "§7%name% §7cannot trade right now.");
-		cfg.set(Phrase.ERROR_TRADE_COMMAND_HELP.toString(), "§cError: Unknown usage of /trade. Instead, try:\n§e/trade §7[player]§8, §e/trade <accept, decline, cancel> §7[player] §8or §e/trade language ...");
-		cfg.set(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP.toString(), "§cError: Unknown usage of /trade language. Instead, try:\n§e/trade language <create/reload/edit/reset/delete> <LanguageCode> §7[for create: LanguageName]");
-		cfg.set(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP_CREATE.toString(), "§cError: Unknown usage of /trade language create. Instead, try:\n§e/trade language create <LanguageCode> <LanguageName>");
-		cfg.set(Phrase.ERROR_INCORRECT_LANGUAGE_CODE_FORMAT.toString(), "§cError: Incorrect Language Code format. The correct format is: §exx-XX§c.\n§cFor example: §7en-US §cor §7de-DE§c.");
-		cfg.set(Phrase.ERROR_MESSAGE_CANNOT_DELETE_DEFAULT_LANGUAGE.toString(), "§4§lError: Cannot delete default language!");
-		cfg.set(Phrase.SUCCESS_LANGUAGE_CREATED.toString(), "§aSuccess! §eYou created the language §c%lang% §7(%langName%)§e.");
-		cfg.set(Phrase.SUCCESS_LANGUAGE_RELOADED.toString(), "§eReloaded language §7%lang%§e.");
-		cfg.set(Phrase.TRADE_DENY_WITH_SELF.toString(), "§cYou cannot trade with yourself.");
-		cfg.set(Phrase.TRADE_DENY_NO_ACCEPT.toString(), "§cThis player does not allow trade requests.");
-		cfg.set(Phrase.TRADE_DENY_ALREADY_PENDING.toString(), "§cYou already have a pending trade offer to §7%name%§c.");
-		cfg.set(Phrase.TRADE_DENY_TRY_ACCEPT_NO_OFFER.toString(), "§cYou have no pending trade offer from §7%name%§c.");
-		cfg.set(Phrase.TRADE_DENY_TRY_CANCEL_NO_OFFER.toString(), "§cYou have no pending trade offer to §7%name%§c.");
-		// Items
-		cfg.set(Phrase.ITEM_NAME_CONFIRM_TRADE.toString(), "§c§lConfirm Trade");
-		cfg.set(Phrase.ITEM_NAME_TRADE_CONFIRMED.toString(), "§a§lTrade confirmed");
-		cfg.set(Phrase.ITEM_LORE_CLICK_TO_RESCIND.toString(), "§cClick to rescind offer");
-		cfg.set(Phrase.ITEM_NAME_PARTNER_NOT_CONFIRMED.toString(), "§c§lPartner has not confirmed Trade");
-		cfg.set(Phrase.ITEM_NAME_PARTNER_CONFIRMED.toString(), "§a§lPartner has confirmed Trade");
-		cfg.set(Phrase.ITEM_NAME_PROCESSING_TRADE.toString(), "§b§lTrading in progress...");
-		// Trade Request Messages
-		cfg.set(Phrase.TRADE_SENT_MESSAGE_BASE.toString(), "§eYou invited §7%name% §eto trade. They have §7%seconds% §eseconds to accept.");
-		cfg.set(Phrase.TRADE_SENT_MESSAGE_CANCEL.toString(), "TAKE BACK");
-		cfg.set(Phrase.TRADE_SENT_MESSAGE_HOVER_CANCEL.toString(), "§8Click to rescind trade offer");
-		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_BASE.toString(), "§eYou have been invited to trade with §7%name%§e. You have §7%seconds% §eseconds to accept.");
-		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_ACCEPT.toString(), "ACCEPT TRADE");
-		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_DECLINE.toString(), "DECLINE TRADE");
-		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT.toString(), "§8Click to accept trade");
-		cfg.set(Phrase.TRADE_RECEIVED_MESSAGE_HOVER_DECLINE.toString(), "§8Click to decline trade");
-		// Trade Offer Results
-		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT.toString(), "§e%name% §aaccepted §eyour trade request.");
-		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED.toString(), "§eYou §aaccepted §ethe trade request from §7%name%.");
-		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_SENT.toString(), "§e%name% §4declined §eyour trade request.");
-		cfg.set(Phrase.TRADE_OFFER_RESULT_MESSAGE_DECLINED_RECEIVED.toString(), "§eYou §4declined §ethe trade request from §7%name%.");
-		cfg.set(Phrase.TRADE_OFFER_CANCELLED_SUCCESS.toString(), "§eYou §4cancelled §ethe trade request to §7%name%§e.");
-		// Trade Inventory
-		cfg.set(Phrase.TRADE_INVENTORY_TITLE.toString(), "§8Trade with %name%");
-		cfg.set(Phrase.TRADE_INVENTORY_CONCLUSION_TITLE.toString(), "§8New Items: Trade with %name%");
-		cfg.set(Phrase.TRADE_INVENTORY_CLOSE_CANCELLED_MESSAGE.toString(), "§cThe trade has been cancelled.");
-		cfg.set(Phrase.TRADE_INVENTORY_UNKNOWN_PLAYER_NAME.toString(), "§c[UNKNOWN]");
-		// Settings
-		cfg.set(Phrase.TRADE_INVENTORY_MESSAGE_OPENING_SETTINGS_INVENTORY.toString(), "§eOpening Trading Settings..");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_TITLE.toString(), "§8Trade Settings: %name%");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME.toString(), "§a§lEnabled");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_LORE.toString(), "§8Click to disable");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME.toString(), "§c§lDisabled");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_LORE.toString(), "§8Click to enable");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_NAME.toString(), "§8Inactive");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_LORE.toString(), "§8Click to enable");
-		// Settings inventory
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_ACCEPT_NAME.toString(), "§aAuto-Accept Trades");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME.toString(), "§eTrade on Request");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_DECLINE_NAME.toString(), "§cAuto-Decline Trades");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME.toString(), "§dAuto-Collect Items");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE.toString(), "Items are automatically added to\nyour inventory post-trade.");
-		cfg.set(Phrase.TRADE_SETTINGS_INVENTORY_SET_LANGUAGE_NAME.toString(), "§eSet Language");
-		// Language Inventory
-		cfg.set(Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE.toString(), "§8Language Settings | Page %page%");
-		cfg.set(Phrase.TRADE_LANG_SETTINGS_BACK_TO_SETTINGS_NAME.toString(), "§cBack to Settings");
-		cfg.set(Phrase.TRADE_LANG_SETTINGS_ADMIN_EDIT_LANGUAGE_NAME.toString(), "§eEdit Language");
-		cfg.set(Phrase.TRADE_LANG_SETTINGS_NEXT_PAGE_NAME.toString(), "§7Next Page");
-		cfg.set(Phrase.TRADE_LANG_SETTINGS_PREV_PAGE_NAME.toString(), "§7Previous Page");
-		cfg.set(Phrase.TRADE_LANG_SETTINGS_CHANGED_LANGUAGE_MESSAGE.toString(), "§eChanged Language to §7%lang%§e.");
-		// Edit Language Inventory
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_TITLE.toString(), "§8Editing Language §d§l%lang%");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_NAME.toString(), "§eChange Language Material");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_LORE.toString(), "§7Click on this with an Item to change the material.");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_DELETE_LANG_NAME.toString(), "§4§lDelete Language: %langName% | ");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_DELETE_LANG_LORE.toString(), "§c§lThis action cannot be undone.\n§c§lShift-click to delete.");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_RESET_LANG_NAME.toString(), "§c§lReset Language: %langName% | ");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_RESET_LANG_LORE.toString(), "§e§lThis action cannot be undone.\n§e§lShift-click to reset.");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_NAME.toString(), "§8§lCannot delete language: §c%lang%");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_CANNOT_DELETE_DEFAULT_LANG_LORE.toString(), "§7§lCannot delete the default language.");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_NAME.toString(), "§cBack to Languages");
-		cfg.set(Phrase.LANGUAGE_EDIT_INVENTORY_BACK_TO_LANG_SETTINGS_LORE.toString(), "§7Page %page%");
-		// Edit Language Messages
-		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_LANG_DELETED.toString(), "§cDeleted language §4§l%langName% §7(%lang%)§c.");
-		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_ITEM_UPDATED.toString(), "§eUpdated Item for §d§l%langName%§e.");
-		cfg.set(Phrase.LANGUAGE_EDIT_MESSAGE_LANG_RESET.toString(), "§cReset language §e§l%langName% §7(%lang%)§c.");
-		// XP-Trading
+		for (Phrase phrase : Phrase.values()) {
+			cfg.set(phrase.toString(), PHRASE_DEFAULTS.getOrDefault(phrase, DefaultValueString));
+		}
 		
 		try {
 			cfg.save(f);
@@ -188,6 +221,10 @@ public class Language {
 	{
 		return getLanguage(DefaultLanguage).get(phrase, MentionedPlayerName);
 	}
+	public static String getPhraseWithApostrophe(Phrase phrase, String MentionedPlayerName)
+	{
+		return getLanguage(DefaultLanguage).get(phrase, MentionedPlayerName);
+	}
 	public static String get(HumanEntity p, Phrase phrase) { return p == null ? getPhrase(phrase) : get(p.getUniqueId(), phrase); }
 	public static String get(UUID uuid, Phrase phrase)
 	{
@@ -199,6 +236,12 @@ public class Language {
 	{
 		if (uuid == null) return getPhrase(phrase, MentionedPlayerName);
 		return getLanguage(TradeSettings.getLanguage(uuid)).get(phrase, MentionedPlayerName);
+	}
+	public static String getWithApostrophe(HumanEntity p, Phrase phrase, String MentionedPlayerName) { return p == null ? getPhrase(phrase, MentionedPlayerName) : get(p.getUniqueId(), phrase, MentionedPlayerName); }
+	public static String getWithApostrophe(UUID uuid, Phrase phrase, String MentionedPlayerName)
+	{
+		if (uuid == null) return getPhraseWithApostrophe(phrase, MentionedPlayerName);
+		return getLanguage(TradeSettings.getLanguage(uuid)).getWithApostrophe(phrase, MentionedPlayerName);
 	}
 	
 	public static void deleteLanguage(String code)
@@ -259,7 +302,7 @@ public class Language {
 			String s = cfg.getString(phrase.toString());
 			if(s == null)
 			{
-				if(code.equals(DefaultLanguage)) s = DefaultValueString;
+				if(code.equals(DefaultLanguage)) s = PHRASE_DEFAULTS.getOrDefault(phrase, DefaultValueString);
 				else s = getPhrase(phrase);		// Get Default Language Phrase
 				try { cfg.set(phrase.toString(), s); cfg.save(f); } catch (IOException ignored) { }
 			}
@@ -302,6 +345,18 @@ public class Language {
 	{
 		if(!LanguageCode.equals(DefaultLanguage)) return Dictionary.getOrDefault(Phrase, getLanguage(DefaultLanguage).get(Phrase)).replace("%name%", MentionedPlayerName);
 		else return Dictionary.getOrDefault(Phrase, DefaultValueString).replace("%name%", MentionedPlayerName);
+	}
+	public String getWithApostrophe(Phrase Phrase, String MentionedPlayerName)
+	{
+		String name;
+		if (MentionedPlayerName == null) {
+			name = "null";
+		} else {
+			name = MentionedPlayerName + "'";
+			if (!MentionedPlayerName.endsWith("s")) name = name + "s";
+		}
+		if(!LanguageCode.equals(DefaultLanguage)) return Dictionary.getOrDefault(Phrase, getLanguage(DefaultLanguage).get(Phrase)).replace("%name%", name);
+		else return Dictionary.getOrDefault(Phrase, DefaultValueString).replace("%name%", name);
 	}
 	
 }

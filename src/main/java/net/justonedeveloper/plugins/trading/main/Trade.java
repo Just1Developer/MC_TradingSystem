@@ -21,12 +21,17 @@ public class Trade {
 	Inventory TradeInventoryPlayer1, TradeInventoryPlayer2;
 	UUID uuidPlayer1, uuidPlayer2;
 	int tradedXPPlayer1 = 0, tradedXPPlayer2 = 0;
+	int confirmedXPPlayer1 = 0, confirmedXPPlayer2 = 0;
 	int totalXPPlayer1, totalXPPlayer2;
 	int deltaLevelXPToNextLevelPlayer1, deltaLevelXPToNextLevelPlayer2;
 	int deltaLevelXPToPrevLevelPlayer1, deltaLevelXPToPrevLevelPlayer2;
 	
+	private boolean isPlayer1EditingXP = false;
+	private boolean isPlayer2EditingXP = false;
+	
 	public static final int[] OwnConfirmSlots = { 36, 37, 38, 39 };
 	public static final int[] OtherConfirmSlots = { 41, 42, 43, 44 };
+	public static final int XP_OVERVIEW_SLOT = 40;
 	
 	public static ItemStack EmptyStack;//, ConfirmRedOwn, ConfirmGreenOwn, ConfirmRedOther, ConfirmGreenOther, ConfirmLoadingBar;
 	
@@ -47,6 +52,37 @@ public class Trade {
 		TradeInventoryPlayer2 = GenerateTradeInventory(Player2, Player1.getName());
 		Player1.openInventory(TradeInventoryPlayer1);
 		Player2.openInventory(TradeInventoryPlayer2);
+	}
+	
+	public Player getThisTrader(UUID uuid) {
+		if (Objects.equals(uuidPlayer1, uuid) || Objects.equals(uuidPlayer2, uuid)) return Bukkit.getPlayer(uuid);
+		return null;
+	}
+	
+	public Player getOtherTrader(UUID uuid) {
+		if (Objects.equals(uuidPlayer1, uuid)) return Bukkit.getPlayer(uuidPlayer2);
+		if (Objects.equals(uuidPlayer2, uuid)) return Bukkit.getPlayer(uuidPlayer1);
+		return null;
+	}
+	
+	public int getTradedXPOfTrader(UUID uuid) {
+		if (Objects.equals(uuidPlayer1, uuid)) return confirmedXPPlayer1;
+		if (Objects.equals(uuidPlayer2, uuid)) return confirmedXPPlayer2;
+		return 0;
+	}
+	
+	public int getTradedXPOfOther(UUID uuid) {
+		if (Objects.equals(uuidPlayer1, uuid)) return confirmedXPPlayer2;
+		if (Objects.equals(uuidPlayer2, uuid)) return confirmedXPPlayer1;
+		return 0;
+	}
+	
+	public Player getPlayer1() {
+		return Bukkit.getPlayer(uuidPlayer1);
+	}
+	
+	public Player getPlayer2() {
+		return Bukkit.getPlayer(uuidPlayer2);
 	}
 	
 	public void setPlayerExp(Player Player)
@@ -76,26 +112,48 @@ public class Trade {
 		if(Player.getUniqueId().equals(uuidPlayer1)) updatePlayer1Exp(Player);
 		else if(Player.getUniqueId().equals(uuidPlayer2)) updatePlayer2Exp(Player);
 	}
-	public void updatePlayer1Exp(Player Player1)
+	private void updatePlayer1Exp(Player Player1)
 	{
 		setTotalPlayer1Exp(Player1);
 		// Make sure traded xp is still possible
 		if(totalXPPlayer1 < tradedXPPlayer1)
 		{
-			setTradedXPPlayer2(Player1, totalXPPlayer1);
-			// Todo send error message & notify other player that xp has been traded. Also cancel countdown if its running
-			Player1.sendMessage("§eYou suck, that's why your exp wasn't enough and was reset to " + totalXPPlayer2 + " (your entire remaining xp lol)");
+			setTradedXPPlayer1(Player1, totalXPPlayer1);
+			if (IsConfirmed(Player1)) {
+				ToggleTradeConfirm(uuidPlayer1);
+			}
+			Player1.sendMessage(Language.get(Player1, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF));
+			Player p2 = Bukkit.getPlayer(this.uuidPlayer2);
+			if (p2 == null) return;
+			if (IsConfirmed(p2)) {
+				ToggleTradeConfirm(uuidPlayer2);
+			}
+			p2.sendMessage(Language.get(p2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
+			concludeXPSettings(Player1);
+		} else if (isPlayer1EditingXP) {
+			setXPTradeItemBar(Player1);
 		}
 	}
-	public void updatePlayer2Exp(Player Player2)
+	private void updatePlayer2Exp(Player Player2)
 	{
 		setTotalPlayer2Exp(Player2);
 		// Make sure traded xp is still possible
 		if(totalXPPlayer2 < tradedXPPlayer2)
 		{
 			setTradedXPPlayer2(Player2, totalXPPlayer2);
-			// Todo send error message & notify other player that xp has been traded. Also cancel countdown if its running
-			Player2.sendMessage("§cYou suck, that's why your exp wasn't enough and was reset to " + totalXPPlayer2 + " (your entire remaining xp lol)");
+			if (IsConfirmed(Player2)) {
+				ToggleTradeConfirm(uuidPlayer2);
+			}
+			Player2.sendMessage(Language.get(Player2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF));
+			Player p1 = Bukkit.getPlayer(this.uuidPlayer1);
+			if (p1 == null) return;
+			if (IsConfirmed(p1)) {
+				ToggleTradeConfirm(uuidPlayer1);
+			}
+			p1.sendMessage(Language.get(Player2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
+			concludeXPSettings(Player2);
+		} else if (isPlayer2EditingXP) {
+			setXPTradeItemBar(Player2);
 		}
 	}
 	
@@ -141,7 +199,7 @@ public class Trade {
 		}
 	}
 	
-	public static Inventory GenerateTradeInventory(Player Trader, String OtherTraderName)
+	public Inventory GenerateTradeInventory(Player Trader, String OtherTraderName)
 	{
 		Inventory inv = Bukkit.createInventory(null, 54, Language.get(Trader, Phrase.TRADE_INVENTORY_TITLE, OtherTraderName));
 		ItemStack red = TradingMain.getConfirmRedOwn(Trader);
@@ -157,6 +215,7 @@ public class Trade {
 		}
 		
 		inv.setItem(22, TradingMain.getXPActivate(Trader));	// Add XP
+		inv.setItem(XP_OVERVIEW_SLOT, TradingMain.getXPOverviewItem(this, Trader));
 		return inv;
 	}
 	
@@ -182,6 +241,8 @@ public class Trade {
 		inv.setItem(2, getXPTradingCurrent(p, XPcalc[0]));
 		inv.setItem(3, TradingMain.getXPTradingPlusOne(p, resXP));
 		inv.setItem(4, TradingMain.getXPTradingPlusTen(p, resXP, XPcalc[1]));	// To prev
+		inv.setItem(22, TradingMain.getXPDeactivate(p));
+		setIsPlayerEditingXP(p, true);
 		/*
 		p.sendMessage("XP: " + xp);
 		p.sendMessage("Your XP: " + p.getTotalExperience());
@@ -191,14 +252,119 @@ public class Trade {
 		 */
 	}
 	
+	public void setConfirmItemLore(Player p, Phrase phrase) { setConfirmItemLore(p.getUniqueId(), phrase); }
+	public void setConfirmItemLore(UUID uuid, Phrase phrase) {
+		Inventory inv = getInventoryOf(uuid);
+		for (int ownConfirmSlot : OwnConfirmSlots) {
+			ItemStack item = inv.getItem(ownConfirmSlot);
+			if (item == null || !item.hasItemMeta()) continue;
+			ItemMeta meta = item.getItemMeta();
+			assert meta != null;
+			if (phrase == null) meta.setLore(new ArrayList<>());
+			else meta.setLore(Collections.singletonList("§7" + Language.get(uuid, phrase)));
+			item.setItemMeta(meta);
+			inv.setItem(ownConfirmSlot, item);
+		}
+	}
+	
+	/**
+	 * Gets if a player currently has the XP editor open. Checks the first itemstack in the Inventory against
+	 * the regular empty slot item. If it's not that, it has to be the XP trading.
+	 * @param p The player.
+	 * @return If the player currently has the XP trading bar available.
+	 */
+	public boolean isEditingXP(Player p) { return isEditingXP(p.getUniqueId()); }
+	
+	/**
+	 * Gets if a player currently has the XP editor open. Checks the first itemstack in the Inventory against
+	 * the regular empty slot item. If it's not that, it has to be the XP trading.
+	 * @param uuid The player's uuid.
+	 * @return If the player currently has the XP trading bar available.
+	 */
+	public boolean isEditingXP(UUID uuid) {
+		if (Objects.equals(uuid, uuidPlayer1)) return isPlayer1EditingXP;
+		if (Objects.equals(uuid, uuidPlayer2)) return isPlayer2EditingXP;
+		return false;
+	}
+	
+	private void setIsPlayerEditingXP(Player p, boolean isEditingXP) {
+		if (Objects.equals(p.getUniqueId(), uuidPlayer1)) isPlayer1EditingXP = isEditingXP;
+		else if (Objects.equals(p.getUniqueId(), uuidPlayer2)) isPlayer2EditingXP = isEditingXP;
+	}
+	
+	/**
+	 * Concludes XP editing and updates the leveraged XP in both Player's UIs.
+	 * @param p The player for which to update the XP.
+	 */
+	public void concludeXPSettings(Player p) {
+		updateConfirmedXP(p);
+		removeXPTradeItemBar(p);
+		setConfirmItemLore(p, null);
+		setIsPlayerEditingXP(p, false);
+	}
+	
+	private void updateConfirmedXP(Player p) { updateConfirmedXP(p.getUniqueId());	}
+	private void updateConfirmedXP(UUID uuid) {
+		if (Objects.equals(uuid, uuidPlayer1)) confirmedXPPlayer1 = tradedXPPlayer1;
+		else if (Objects.equals(uuid, uuidPlayer2)) confirmedXPPlayer2 = tradedXPPlayer2;
+		updateXPOverviewItem(uuid);
+	}
+	
+	private void updateXPOverviewItem() {
+		updateXPOverviewItem(null);
+	}
+	private void updateXPOverviewItem(UUID changed) {
+		ItemStack i1 = TradingMain.getXPOverviewItem(this, uuidPlayer1, (TradeInventoryPlayer1.getItem(XP_OVERVIEW_SLOT) != null && TradeInventoryPlayer1.getItem(XP_OVERVIEW_SLOT).getType() == Material.ENCHANTED_BOOK) || Objects.equals(changed, uuidPlayer2));
+		ItemStack i2 = TradingMain.getXPOverviewItem(this, uuidPlayer2, (TradeInventoryPlayer2.getItem(XP_OVERVIEW_SLOT) != null && TradeInventoryPlayer2.getItem(XP_OVERVIEW_SLOT).getType() == Material.ENCHANTED_BOOK) || Objects.equals(changed, uuidPlayer1));
+		TradeInventoryPlayer1.setItem(XP_OVERVIEW_SLOT, i1);
+		TradeInventoryPlayer2.setItem(XP_OVERVIEW_SLOT, i2);
+	}
+	public void unenchantXPOverviewItem(UUID changed) {
+		if (uuidPlayer1.equals(changed)) {
+			ItemStack i = TradingMain.getXPOverviewItem(this, uuidPlayer1, false);
+			TradeInventoryPlayer1.setItem(XP_OVERVIEW_SLOT, i);
+		} else if (uuidPlayer2.equals(changed)) {
+			ItemStack i = TradingMain.getXPOverviewItem(this, uuidPlayer2, false);
+			TradeInventoryPlayer2.setItem(XP_OVERVIEW_SLOT, i);
+		}
+	}
+	
+	private void removeXPTradeItemBar(Player p)
+	{
+		Inventory inv = getInventoryOf(p);
+		int xp = getTradedXPOf(p);
+		int pxp = getTotalXPOf(p);
+		int resXP = pxp - xp;
+		int[] XPcalc = XPCalc.levelOf(resXP);
+		if(p.getUniqueId().equals(uuidPlayer1))
+		{
+			this.deltaLevelXPToPrevLevelPlayer1 = XPcalc[1];
+			this.deltaLevelXPToNextLevelPlayer1 = XPcalc[2];
+		}
+		else if(p.getUniqueId().equals(uuidPlayer2))
+		{
+			this.deltaLevelXPToPrevLevelPlayer2 = XPcalc[1];
+			this.deltaLevelXPToNextLevelPlayer2 = XPcalc[2];
+		}
+		
+		for (int i = 0; i < 5; ++i) {
+			inv.setItem(i, Trade.EmptyStack);
+		}
+		inv.setItem(22, TradingMain.getXPActivate(p));	// Add XP
+	}
+	
 	private ItemStack getXPTradingCurrent(Player p, int newLevel)
 	{
 		int xp = getTradedXPOf(p);
 		ItemStack it = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
-		m.setDisplayName("§e§lCurrent XP");//Language.get(uuid, Phrase.XP_TRADING_));
-		m.setLore(Arrays.asList("§7XP Traded: §e" + xp, "§7Resulting Level: §c" + newLevel));	// Old:  XPCalc.levelOf(p.getTotalExperience() - xp).Key));
+		UUID uuid = p.getUniqueId();
+		m.setDisplayName(Language.get(uuid, Phrase.XP_TRADING_GUI_CURRENT_XP_NAME));
+		m.setLore(Arrays.asList(
+				Language.get(uuid, Phrase.XP_TRADING_GUI_CURRENT_XP_LORE_1).replace("%points%", "" + xp),
+				Language.get(uuid, Phrase.XP_TRADING_GUI_CURRENT_XP_LORE_2).replace("%level%", "" + newLevel)
+				));
 		it.setItemMeta(m);
 		return it;
 	}
@@ -406,7 +572,7 @@ public class Trade {
 	{
 		Player p = Bukkit.getPlayer(PlayerUUID);
 		if(p == null) return;
-		p.playSound(p.getLocation(), Sound, 3.0f, pitch);
+		p.playSound(p.getLocation(), Sound, 1.0f, pitch);
 	}
 	
 	public void CancelTrade(UUID PlayerWhoClosedTheInventory)
@@ -519,52 +685,50 @@ public class Trade {
 		}
 		TradeInventoryEventHandler.Trades.remove(uuidPlayer1);
 		TradeInventoryEventHandler.Trades.remove(uuidPlayer2);
-		if(pl1 != null && !TradeResultPlayer1.isEmpty())
-		{
-			if(TradeSettings.getAutoCollectSettingValue(pl1.getUniqueId()))
-			{
-				Inventory i2 = Bukkit.createInventory(null, 27, TitlePlayer1);
-				List<ItemStack> LeftOvers = new ArrayList<>();
-				for(ItemStack i : TradeResultPlayer1.getContents()) {
-					if(i == null) continue;
-					LeftOvers.addAll(pl1.getInventory().addItem(i).values());
+		if(pl1 != null) {
+			if (!TradeResultPlayer1.isEmpty()) {
+				if(TradeSettings.getAutoCollectSettingValue(pl1.getUniqueId())) {
+					Inventory i2 = Bukkit.createInventory(null, 27, TitlePlayer1);
+					List<ItemStack> LeftOvers = new ArrayList<>();
+					for(ItemStack i : TradeResultPlayer1.getContents()) {
+						if(i == null) continue;
+						LeftOvers.addAll(pl1.getInventory().addItem(i).values());
+					}
+					for(ItemStack drops : LeftOvers) {
+						i2.addItem(drops);
+					}
+					if(!i2.isEmpty()) pl1.openInventory(i2);
+					else pl1.closeInventory();
+				} else {
+					pl1.openInventory(TradeResultPlayer1);
 				}
-				for(ItemStack drops : LeftOvers)
-				{
-					i2.addItem(drops);
-				}
-				if(!i2.isEmpty()) pl1.openInventory(i2);
-				else pl1.closeInventory();
 			}
-			else
-			{
-				pl1.openInventory(TradeResultPlayer1);
-			}
+			pl1.closeInventory();
+			pl1.giveExp(-tradedXPPlayer1);
+			pl1.giveExp(tradedXPPlayer2);
 		}
-		else if(pl1 != null) pl1.closeInventory();
-		if(pl2 != null && !TradeResultPlayer2.isEmpty())
-		{
-			if(TradeSettings.getAutoCollectSettingValue(pl2.getUniqueId()))
-			{
-				Inventory i2 = Bukkit.createInventory(null, 27, TitlePlayer2);
-				List<ItemStack> LeftOvers = new ArrayList<>();
-				for(ItemStack i : TradeResultPlayer2.getContents()) {
-					if(i == null) continue;
-					LeftOvers.addAll(pl2.getInventory().addItem(i).values());
+		if(pl2 != null) {
+			if (!TradeResultPlayer2.isEmpty()) {
+				if(TradeSettings.getAutoCollectSettingValue(pl2.getUniqueId())) {
+					Inventory i2 = Bukkit.createInventory(null, 27, TitlePlayer2);
+					List<ItemStack> LeftOvers = new ArrayList<>();
+					for(ItemStack i : TradeResultPlayer2.getContents()) {
+						if(i == null) continue;
+						LeftOvers.addAll(pl2.getInventory().addItem(i).values());
+					}
+					for(ItemStack drops : LeftOvers) {
+						i2.addItem(drops);
+					}
+					if(!i2.isEmpty()) pl2.openInventory(i2);
+					else pl2.closeInventory();
+				} else {
+					pl2.openInventory(TradeResultPlayer2);
 				}
-				for(ItemStack drops : LeftOvers)
-				{
-					i2.addItem(drops);
-				}
-				if(!i2.isEmpty()) pl2.openInventory(i2);
-				else pl2.closeInventory();
 			}
-			else
-			{
-				pl2.openInventory(TradeResultPlayer2);
-			}
+			pl2.closeInventory();
+			pl2.giveExp(-tradedXPPlayer2);
+			pl2.giveExp(tradedXPPlayer1);
 		}
-		else if(pl2 != null) pl2.closeInventory();
 	}
 
 }

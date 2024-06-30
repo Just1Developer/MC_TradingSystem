@@ -47,10 +47,19 @@ public class TradeInventoryEventHandler implements Listener {
 		if(slot == 22)
 		{
 			e.setCancelled(true);
-			if(!HasConfirmed)
-			{
-				trade.setXPTradeItemBar(p);
+			
+			
+			if (trade.isEditingXP(p)) {
+				trade.concludeXPSettings(p);
+			} else {
+				if (!HasConfirmed) {
+					trade.setXPTradeItemBar(p);
+				} else {
+					trade.ToggleTradeConfirm(p);    // cancel countdown
+					trade.setXPTradeItemBar(p);
+				}
 			}
+			
 			return;
 		}
 		else if(slot < 5 && e.getCurrentItem() != null && !e.getCurrentItem().getType().isAir() && !e.getCurrentItem().equals(Trade.EmptyStack))
@@ -79,10 +88,14 @@ public class TradeInventoryEventHandler implements Listener {
 					delta = 0;
 					break;
 			}
-			Bukkit.broadcastMessage("§5Click >> Player: " + p.getName() + " | Delta: " + delta);
+			Bukkit.broadcastMessage("§5Click >> Player: " + p.getName() + " | Delta: " + delta + " §aIsTrading: " + trade.isEditingXP(p));
 			trade.addTradedXP(p, delta);
 			trade.setXPTradeItemBar(p);
 			return;
+		} else if (slot == Trade.XP_OVERVIEW_SLOT) {
+			if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getType() == Material.ENCHANTED_BOOK) {
+				trade.unenchantXPOverviewItem(e.getWhoClicked().getUniqueId());
+			}
 		}
 		
 		if(e.getClick() == ClickType.DOUBLE_CLICK)
@@ -188,6 +201,10 @@ public class TradeInventoryEventHandler implements Listener {
 			// Confirm clicked
 			if(row == 4 && col <= 3)
 			{
+				if (!trade.IsConfirmed(p) && trade.isEditingXP(p)) {
+					trade.setConfirmItemLore(p, Phrase.XP_TRADING_STILL_EDITING_XP_NO_CONFIRM_LORE);
+					return;
+				}
 				trade.ToggleTradeConfirm(uuid);
 			}
 			return;

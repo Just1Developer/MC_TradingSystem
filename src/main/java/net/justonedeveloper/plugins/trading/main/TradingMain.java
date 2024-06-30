@@ -6,6 +6,7 @@ import net.justonedeveloper.plugins.trading.language.Phrase;
 import net.justonedeveloper.plugins.trading.settings.TradeSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -122,8 +123,9 @@ public final class TradingMain extends JavaPlugin {
 		ItemStack it = new ItemStack(Material.LIME_STAINED_GLASS_PANE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
-		m.setDisplayName("§a§lAdd XP");//Language.get(uuid, Phrase.XP_TRADING_));
-		m.setLore(Arrays.asList("§7Click: +" + stringOf(points, 1) + " XP", "§7Shift-Click: +" + stringOf(points, 10) + " XP"));
+		m.setDisplayName(Language.get(uuid, Phrase.XP_TRADING_GUI_ADD_XP_NAME));
+		m.setLore(Arrays.asList(Language.get(uuid, Phrase.XP_TRADING_GUI_ADD_XP_LORE_SINGLE).replace("%points%", stringOf(points, 1)),
+				Language.get(uuid, Phrase.XP_TRADING_GUI_ADD_XP_LORE_SINGLE_SHIFT).replace("%points%", stringOf(points, 10))));
 		it.setItemMeta(m);
 		return it;
 	}
@@ -134,8 +136,9 @@ public final class TradingMain extends JavaPlugin {
 		ItemStack it = new ItemStack(Material.GREEN_STAINED_GLASS_PANE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
-		m.setDisplayName("§a§lAdd XP");//Language.get(uuid, Phrase.XP_TRADING_));
-		m.setLore(Arrays.asList("§7Click: +1 Level §c(+" + stringOf(points, levelDiff) + " XP)", "§eShift-Click: All of it §c(+" + points + " XP)"));
+		m.setDisplayName(Language.get(uuid, Phrase.XP_TRADING_GUI_ADD_XP_NAME));
+		m.setLore(Arrays.asList(Language.get(uuid, Phrase.XP_TRADING_GUI_ADD_XP_LORE_LEVEL).replace("%points%", stringOf(points, levelDiff)),
+				Language.get(uuid, Phrase.XP_TRADING_GUI_ADD_XP_LORE_LEVEL_SHIFT).replace("%points%", String.valueOf(points))));
 		it.setItemMeta(m);
 		return it;
 	}
@@ -146,8 +149,9 @@ public final class TradingMain extends JavaPlugin {
 		ItemStack it = new ItemStack(Material.ORANGE_STAINED_GLASS_PANE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
-		m.setDisplayName("§c§lRemove XP");//Language.get(uuid, Phrase.XP_TRADING_));
-		m.setLore(Arrays.asList("§7Click: -" + stringOf(points, 1) + " XP", "§7Shift-Click: -" + stringOf(points, 10) + " XP"));
+		m.setDisplayName(Language.get(uuid, Phrase.XP_TRADING_GUI_REMOVE_XP_NAME));
+		m.setLore(Arrays.asList(Language.get(uuid, Phrase.XP_TRADING_GUI_REMOVE_XP_LORE_SINGLE).replace("%points%", stringOf(points, 1)),
+				Language.get(uuid, Phrase.XP_TRADING_GUI_REMOVE_XP_LORE_SINGLE_SHIFT).replace("%points%", stringOf(points, 10))));
 		it.setItemMeta(m);
 		return it;
 	}
@@ -158,8 +162,9 @@ public final class TradingMain extends JavaPlugin {
 		ItemStack it = new ItemStack(Material.RED_STAINED_GLASS_PANE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
-		m.setDisplayName("§c§lRemove XP");//Language.get(uuid, Phrase.XP_TRADING_));
-		m.setLore(Arrays.asList("§7Click: -1 Level §c(-" + stringOf(points, levelDiff) + " XP)", "§eShift-Click: All of it §c(-" + points + " XP)"));
+		m.setDisplayName(Language.get(uuid, Phrase.XP_TRADING_GUI_REMOVE_XP_NAME));
+		m.setLore(Arrays.asList(Language.get(uuid, Phrase.XP_TRADING_GUI_REMOVE_XP_LORE_LEVEL).replace("%points%", stringOf(points, levelDiff)),
+				Language.get(uuid, Phrase.XP_TRADING_GUI_REMOVE_XP_LORE_LEVEL_SHIFT).replace("%points%", String.valueOf(points))));
 		it.setItemMeta(m);
 		return it;
 	}
@@ -170,8 +175,8 @@ public final class TradingMain extends JavaPlugin {
 		ItemStack it = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
-		m.setDisplayName("§e§lEdit Traded XP");//Language.get(uuid, Phrase.XP_TRADING_));
-		m.setLore(Collections.singletonList("§7Click to add/remove XP"));
+		m.setDisplayName(Language.get(uuid, Phrase.XP_TRADING_GUI_EDIT_TRADED_XP_NAME));
+		m.setLore(Collections.singletonList(Language.get(uuid, Phrase.XP_TRADING_GUI_EDIT_TRADED_XP_LORE)));
 		it.setItemMeta(m);
 		return it;
 	}
@@ -182,8 +187,27 @@ public final class TradingMain extends JavaPlugin {
 		ItemStack it = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
 		ItemMeta m = it.getItemMeta();
 		assert m != null;
-		m.setDisplayName("§a§lConfirm XP Trade");//Language.get(uuid, Phrase.XP_TRADING_));
-		m.setLore(Collections.singletonList("§7Click to confirm XP"));
+		m.setDisplayName(Language.get(uuid, Phrase.XP_TRADING_GUI_CONFIRM_TRADED_XP_NAME));
+		m.setLore(Collections.singletonList(Language.get(uuid, Phrase.XP_TRADING_GUI_CONFIRM_TRADED_XP_LORE)));
+		it.setItemMeta(m);
+		return it;
+	}
+	
+	public static ItemStack getXPOverviewItem(Trade trade, Player player) { return getXPOverviewItem(trade, player == null ? null : player.getUniqueId()); }
+	public static ItemStack getXPOverviewItem(Trade trade, UUID uuid) { return getXPOverviewItem(trade, uuid, false); }
+	public static ItemStack getXPOverviewItem(Trade trade, UUID uuid, boolean enchant)
+	{
+		ItemStack it = new ItemStack(enchant ? Material.ENCHANTED_BOOK : Material.BOOK, 1);
+		ItemMeta m = it.getItemMeta();
+		assert m != null;
+		
+		Player p1 = trade.getThisTrader(uuid), p2 = trade.getOtherTrader(uuid);
+		
+		m.setDisplayName(Language.get(uuid, Phrase.XP_TRADING_GUI_OVERVIEW_NAME));
+		m.setLore(Arrays.asList(
+				Language.getWithApostrophe(uuid, Phrase.XP_TRADING_GUI_OVERVIEW_LORE_SELF, p1 == null ? null : p1.getName()).replace("%points%", trade.getTradedXPOfTrader(uuid) + ""),
+				Language.getWithApostrophe(uuid, Phrase.XP_TRADING_GUI_OVERVIEW_LORE_OTHER, p2 == null ? null : p2.getName()).replace("%points%", trade.getTradedXPOfOther(uuid) + "")));
+		
 		it.setItemMeta(m);
 		return it;
 	}
