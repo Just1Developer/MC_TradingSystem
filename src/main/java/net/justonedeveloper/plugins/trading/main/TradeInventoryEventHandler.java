@@ -33,6 +33,7 @@ public class TradeInventoryEventHandler implements Listener {
 	@EventHandler
 	public void OnInventoryClick(InventoryClickEvent e)
 	{
+		Bukkit.broadcastMessage("0");
 		if(e.getClickedInventory() == null) return;
 		if(!Trades.containsKey(e.getWhoClicked().getUniqueId())) return;	// Player has trade inventory open
 		
@@ -44,11 +45,8 @@ public class TradeInventoryEventHandler implements Listener {
 		int col = slot % 9;
 		boolean HasConfirmed = trade.IsConfirmed(uuid);
 		
-		if(slot == 22)
-		{
+		if(slot == 22) {
 			e.setCancelled(true);
-			
-			
 			if (trade.isEditingXP(p)) {
 				trade.concludeXPSettings(p);
 			} else {
@@ -62,12 +60,10 @@ public class TradeInventoryEventHandler implements Listener {
 			
 			return;
 		}
-		else if(slot < 5 && e.getCurrentItem() != null && !e.getCurrentItem().getType().isAir() && !e.getCurrentItem().equals(Trade.EmptyStack))
-		{
+		else if(slot < 5 && e.getCurrentItem() != null && !e.getCurrentItem().getType().isAir() && !e.getCurrentItem().equals(Trade.EmptyStack)) {
 			e.setCancelled(true);
 			int delta;
-			switch (slot)
-			{
+			switch (slot) {
 				case 0:
 					// -level oder -all
 					delta = e.isShiftClick() ? -trade.getTotalXPOf(uuid) : -trade.getDeltaLevelXPToNextLevelOf(uuid);	// Remove XP -> Removed from Trade -> Added, so to next level
@@ -92,9 +88,11 @@ public class TradeInventoryEventHandler implements Listener {
 			trade.setXPTradeItemBar(p);
 			return;
 		} else if (slot == Trade.XP_OVERVIEW_SLOT) {
+			e.setCancelled(true);
 			if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getType() == Material.ENCHANTED_BOOK) {
 				trade.unenchantXPOverviewItem(e.getWhoClicked().getUniqueId());
 			}
+			return;
 		}
 		
 		if(e.getClick() == ClickType.DOUBLE_CLICK)
@@ -132,23 +130,34 @@ public class TradeInventoryEventHandler implements Listener {
 			return;
 		}
 
+		Bukkit.broadcastMessage("1");
 		if (e.getClick() == ClickType.NUMBER_KEY)
 		{
+			Bukkit.broadcastMessage("2");
 			//int hotbarSlot = e.getHotbarButton();
 			//ItemStack hotbarItem = e.getWhoClicked().getInventory().getItem(hotbarSlot);
 
 			// We want the item in the slot and the item in the hotbar. Cancel the swap if it's illegal.
 			// First, determine if the Trade inventory was manipulated.
-			if(e.getClickedInventory().equals(e.getInventory()))
+			Bukkit.broadcastMessage("§eA ClickedInv + " + e.getClickedInventory());
+			Bukkit.broadcastMessage("§eB Inv + " + e.getInventory());
+			Bukkit.broadcastMessage("§eC Raw + " + e.getRawSlot());
+			Bukkit.broadcastMessage("§eD Slot + " + e.getSlot());
+			if(e.getRawSlot() != e.getSlot())	// Click happened in lower inventory, so we don't care
 			{
 				// Cannot be illegal swap. Return immediately.
 				return;
 			}
+			Bukkit.broadcastMessage("3");
+			
+			// Definitely probably an illegal swap. If not, it won't do anything, so there
+			// is also no harm in cancelling it.
+			e.setCancelled(true);
+			Bukkit.broadcastMessage("4");
 
 			// If has confirmed or illegal slots, block action
 			if(col > 3 || row == 0 || row >= 4 || HasConfirmed)
 			{
-				e.setCancelled(true);
 				return;
 			}
 
