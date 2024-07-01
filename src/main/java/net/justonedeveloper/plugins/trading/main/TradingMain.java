@@ -67,10 +67,10 @@ public final class TradingMain extends JavaPlugin {
 		if (p.isOp()) return true;
 		if (p.hasPermission("*")) return true;
 		if (!permission.contains(".")) return p.hasPermission(permission);
-		String[] split = permission.split(".");
+		String[] split = permission.split("\\.");
 		StringBuilder perm = new StringBuilder(split[0]);
 		for (int i = 1; i < split.length; ++i) {
-			if (p.hasPermission(perm.toString() + ".*")) return true;
+			if (p.hasPermission(perm + ".*")) return true;
 			perm.append(split[i]);
 		}
 		return p.hasPermission(perm.toString());

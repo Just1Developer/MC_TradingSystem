@@ -253,7 +253,7 @@ public class TradeCommand implements CommandExecutor {
 				return false;
 			}
 			p = (Player) sender;
-			if(!p.isOp() && !p.hasPermission("trading.admin.language." + args[1].toLowerCase()) && !sender.hasPermission("trading.admin.language.*"))
+			if(!TradingMain.hasPermission(p, "trading.admin.language." + args[1].toLowerCase()))
 			{
 				sender.sendMessage(Language.get(p, Phrase.ERROR_INSUFFICIENT_PERMISSIONS));
 				return false;

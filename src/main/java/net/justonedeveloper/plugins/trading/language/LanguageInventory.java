@@ -30,7 +30,7 @@ public class LanguageInventory implements Listener {
 	public static void openInventory(Player p) { openInventory(p, 1); }
 	public static void openInventory(Player p, int page)
 	{
-		boolean hasPerms = p.isOp() || p.hasPermission("trading.admin.language.edit") || p.hasPermission("trading.admin.language.*");
+		boolean hasPerms = TradingMain.hasPermission(p, "trading.admin.language.edit");
 		int invSize = hasPerms ? 36 : 27;
 		Inventory inv = Bukkit.createInventory(null, invSize, Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE).replace("%page%", "" + page));
 		UUID uuid = p.getUniqueId();
@@ -187,7 +187,7 @@ public class LanguageInventory implements Listener {
 			
 			if(e.getCurrentItem().getType() == Material.BARRIER && dn.startsWith(Language.get(p, Phrase.LANGUAGE_EDIT_INVENTORY_DELETE_LANG_NAME).split("%langName%")[0]))
 			{
-				if (!p.isOp() && !p.hasPermission("trading.admin.language.delete") && !p.hasPermission("trading.admin.language.*"))
+				if (!TradingMain.hasPermission(p, "trading.admin.language.delete"))
 				{
 					p.sendMessage(Language.get(p, Phrase.ERROR_INSUFFICIENT_PERMISSIONS));
 					return;
@@ -206,7 +206,7 @@ public class LanguageInventory implements Listener {
 			
 			if(e.getCurrentItem().getType() == Material.BEDROCK && dn.startsWith(Language.get(p, Phrase.LANGUAGE_EDIT_INVENTORY_RESET_LANG_NAME).split("%langName%")[0]))
 			{
-				if (!p.isOp() && !p.hasPermission("trading.admin.language.reset") && !p.hasPermission("trading.admin.language.*"))
+				if (!TradingMain.hasPermission(p, "trading.admin.language.reset"))
 				{
 					p.sendMessage(Language.get(p, Phrase.ERROR_INSUFFICIENT_PERMISSIONS));
 					return;
@@ -266,8 +266,8 @@ public class LanguageInventory implements Listener {
 			TradeSettings.openInventory(p);
 			return;
 		}
-
-		boolean hasPerms = p.isOp() || p.hasPermission("trading.admin.language.edit") || p.hasPermission("trading.admin.language.*");
+		
+		boolean hasPerms = TradingMain.hasPermission(p, "trading.admin.language.edit");
 
 		if(rawSlot == 8 && currentItem.hasItemMeta() && currentItem.getItemMeta().hasDisplayName()
 				&& currentItem.getItemMeta().getDisplayName().equals(lang.get(Phrase.TRADE_LANG_SETTINGS_REFRESH_LANGS_NAME)))
