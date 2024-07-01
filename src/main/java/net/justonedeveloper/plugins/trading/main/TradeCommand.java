@@ -94,16 +94,16 @@ public class TradeCommand implements CommandExecutor {
 			
 			TextComponent msgAccept = new TextComponent();
 			msgAccept.setText("§a§l[" + Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_ACCEPT) + "§a§l]");
-			msgAccept.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT))));
+			msgAccept.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_HOVER_ACCEPT))));
 			msgAccept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade accept " + p.getName()));
 			
 			TextComponent msgDecline = new TextComponent();
 			msgDecline.setText("§4§l[" + Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_DECLINE) + "§4§l]");
-			msgDecline.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_RECEIVED_MESSAGE_HOVER_DECLINE))));
+			msgDecline.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(pl, Phrase.TRADE_RECEIVED_MESSAGE_HOVER_DECLINE))));
 			msgDecline.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade decline " + p.getName()));
 			
 			TextComponent msgCancel = new TextComponent();
-			msgCancel.setText("§c§l[" + Language.get(pl, Phrase.TRADE_SENT_MESSAGE_CANCEL) + "§c§l]");
+			msgCancel.setText("§c§l[" + Language.get(p, Phrase.TRADE_SENT_MESSAGE_CANCEL) + "§c§l]");
 			msgCancel.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Language.get(p, Phrase.TRADE_SENT_MESSAGE_HOVER_CANCEL))));
 			msgCancel.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade cancel " + pl.getName()));
 			

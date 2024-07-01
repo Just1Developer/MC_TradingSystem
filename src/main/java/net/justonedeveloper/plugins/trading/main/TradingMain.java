@@ -15,7 +15,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
 
 public final class TradingMain extends JavaPlugin {
-	
+
+	// Todo Reload-Languages Command.
+	// Todo also, fix the language stuff with the glass panes
+
 	// Maybe do a basic own money implementation?
 	// Money implementation from other plugins would only work if the store and read live from the file every time
 	

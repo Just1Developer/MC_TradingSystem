@@ -129,27 +129,29 @@ public class TradeSettings implements Listener {
 		boolean autoFill = getAutoCollectSettingValue(uuid);
 		
 		ItemStack autoAccept = new ItemStack(Material.CAKE);
-		ItemMeta meta = autoAccept.getItemMeta();
-		assert meta != null;
+		ItemMeta meta = autoAccept.getItemMeta(); assert meta != null;
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_ACCEPT_NAME));
 		autoAccept.setItemMeta(meta);
 		
 		ItemStack request = new ItemStack(Material.LEAD);
+		meta = request.getItemMeta(); assert meta != null;
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME));
 		request.setItemMeta(meta);
 		
 		ItemStack autoDecline = new ItemStack(Material.BARRIER);
+		meta = autoDecline.getItemMeta(); assert meta != null;
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_DECLINE_NAME));
 		autoDecline.setItemMeta(meta);
 		
 		ItemStack autoCollect = new ItemStack(Material.ENDER_CHEST);
+		meta = autoCollect.getItemMeta(); assert meta != null;
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME));
 		List<String> l = new ArrayList<>();
 		for(String s : lang.get(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE).split("\n"))
 		{
 			l.add("§7" + s);
 		}
-		if(autoFill) l.add(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME));
+		if (autoFill) l.add(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME));
 		else l.add(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME));
 		meta.setLore(l);
 		autoCollect.setItemMeta(meta);
@@ -161,16 +163,19 @@ public class TradeSettings implements Listener {
 		language.setItemMeta(meta);
 		
 		ItemStack activated = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
+		meta = activated.getItemMeta(); assert meta != null;
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME));
 		meta.setLore(Collections.singletonList(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_LORE)));
 		activated.setItemMeta(meta);
 		
 		ItemStack deactivated = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+		meta = deactivated.getItemMeta(); assert meta != null;
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME));
 		meta.setLore(Collections.singletonList(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_LORE)));
 		deactivated.setItemMeta(meta);
 		
 		ItemStack deactivated_gray = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+		meta = deactivated_gray.getItemMeta(); assert meta != null;
 		meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_NAME));
 		meta.setLore(Collections.singletonList(lang.get(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_LORE)));
 		deactivated_gray.setItemMeta(meta);
