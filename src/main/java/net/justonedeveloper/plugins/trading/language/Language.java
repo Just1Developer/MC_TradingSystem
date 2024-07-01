@@ -22,7 +22,7 @@ public class Language {
 	
 	private static final Map<Phrase, String> PHRASE_DEFAULTS = new HashMap<>();
 	static {
-		PHRASE_DEFAULTS.put(Phrase.ERROR_LANGUAGE_WAS_DELETED, "§cYour selected language (%lang%) has been deleted. Your language has been reset to English.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_LANGUAGE_WAS_DELETED, "§cYour selected language (%lang%) has been deleted. Your language has been reset to %defaultLang%.");
 		PHRASE_DEFAULTS.put(Phrase.ERROR_LANGUAGE_ALREADY_EXISTS, "§cSorry, that language already exists.");
 		PHRASE_DEFAULTS.put(Phrase.ERROR_LANGUAGE_NOT_EXIST, "§cSorry, that language does not seem to exist.");
 		PHRASE_DEFAULTS.put(Phrase.ERROR_INSUFFICIENT_PERMISSIONS, "§cSorry, you don't have permission to do that.");
@@ -73,6 +73,7 @@ public class Language {
 		PHRASE_DEFAULTS.put(Phrase.TRADE_INVENTORY_MESSAGE_OPENING_SETTINGS_INVENTORY, "§eOpening Trading Settings..");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_TITLE, "§8Trade Settings: %name%");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME, "§a§lEnabled");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_SELECTED_NAME, "§a§lSelected");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_LORE, "§8Click to disable");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_NAME, "§c§lDisabled");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_DISABLED_LORE, "§8Click to enable");
@@ -85,6 +86,9 @@ public class Language {
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME, "§dAuto-Collect Items");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE, "Items are automatically added to\nyour inventory post-trade.");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_SET_LANGUAGE_NAME, "§eSet Language");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_REFRESH_ALL_NAME, "§d§lRefresh Global Settings");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_REFRESH_ALL_LORE, "§7Re-imports the settings from the config file.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_REFRESH_MSG_REFRESHED_SETTINGS, "§eRe-imported all settings.");
 		// Language Inventory
 		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE, "§8Language Settings | Page %page%");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_BACK_TO_SETTINGS_NAME, "§cBack to Settings");
@@ -92,6 +96,9 @@ public class Language {
 		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_NEXT_PAGE_NAME, "§7Next Page");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_PREV_PAGE_NAME, "§7Previous Page");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_CHANGED_LANGUAGE_MESSAGE, "§eChanged Language to §7%lang%§e.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_REFRESH_LANGS_NAME, "§d§lRefresh Languages");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_REFRESH_LANGS_LORE, "§7Re-imports all languages from the files.");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_LANG_SETTINGS_MSG_REFRESHED_LANGUAGES, "§eRe-imported all languages.");
 		// Edit Language Inventory
 		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_TITLE, "§8Editing Language §d§l%lang%");
 		PHRASE_DEFAULTS.put(Phrase.LANGUAGE_EDIT_INVENTORY_UPDATE_ITEM_NAME, "§eChange Language Material");
@@ -147,15 +154,7 @@ public class Language {
 	public static void Init()
 	{
 		// Import all languages
-		if(!new File(folder, DefaultLanguage + ".yml").exists())
-		{
-			new Language(DefaultLanguage, "English");
-		}
-		else
-		{
-			// Import Default Language First
-			new Language(DefaultLanguage);
-		}
+		InitDefaultOnly();
 		
 		File[] files = folder.listFiles();
 		if(files == null) return;
@@ -165,6 +164,28 @@ public class Language {
 			if(TradeCommand.incorrectLanguageCodeFormat(code)) continue;
 			if(LanguageIDs.contains(code)) continue;
 			new Language(code);
+		}
+	}
+
+	public static void ReInit()
+	{
+		LanguageIDs.clear();
+		Languages.clear();
+		Init();
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			TradeSettings.tryLoadLanguageOf(player);
+		}
+	}
+
+	public static void InitDefaultOnly() {
+		if(!new File(folder, DefaultLanguage + ".yml").exists())
+		{
+			new Language(DefaultLanguage, "English");
+		}
+		else
+		{
+			// Import Default Language First
+			new Language(DefaultLanguage);
 		}
 	}
 	
@@ -193,7 +214,8 @@ public class Language {
 	{
 		return getLanguage(TradeSettings.getLanguage(uuid));
 	}
-	
+	public static Language getDefaultLanguage() { return getLanguage(Language.DefaultLanguage); }
+
 	public static void CreateLanguageFile(String code, String LanguageName) { CreateLanguageFile(code, LanguageName, false); }
 	public static void CreateLanguageFile(String code, String LanguageName, boolean ignoreExists)
 	{

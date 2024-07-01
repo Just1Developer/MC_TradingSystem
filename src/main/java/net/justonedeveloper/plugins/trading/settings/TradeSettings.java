@@ -3,6 +3,7 @@ package net.justonedeveloper.plugins.trading.settings;
 import net.justonedeveloper.plugins.trading.language.Language;
 import net.justonedeveloper.plugins.trading.language.LanguageInventory;
 import net.justonedeveloper.plugins.trading.language.Phrase;
+import net.justonedeveloper.plugins.trading.main.GlobalConfig;
 import net.justonedeveloper.plugins.trading.main.TradingMain;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -57,15 +58,24 @@ public class TradeSettings implements Listener {
 	{
 		Player p = e.getPlayer();
 		YamlConfiguration cfg = getConfigurationOf(p);
+		tryLoadLanguageOf(p, false);
+		cfg.set("Last known name", p.getName());
+		saveFile(new File(folder, p.getUniqueId() + ".yml"), cfg);
+	}
+
+	public static void tryLoadLanguageOf(Player p) {
+		tryLoadLanguageOf(p, true);
+	}
+	private static void tryLoadLanguageOf(Player p, boolean saveAfter) {
+		YamlConfiguration cfg = getConfigurationOf(p);
 		String lang = cfg.getString("Language");
 		if(!Language.exists(lang))
 		{
 			if(lang == null) lang = "null";
-			p.sendMessage(Language.getPhrase(Phrase.ERROR_LANGUAGE_WAS_DELETED).replace("%lang%", lang));
+			p.sendMessage(Language.getPhrase(Phrase.ERROR_LANGUAGE_WAS_DELETED).replace("%lang%", lang).replace("%defaultLang%", Language.getDefaultLanguage().LanguageName));
 			cfg.set("Language", Language.DefaultLanguage);
+			if (saveAfter) saveFile(new File(folder, p.getUniqueId() + ".yml"), cfg);
 		}
-		cfg.set("Last known name", p.getName());
-		saveFile(new File(folder, p.getUniqueId() + ".yml"), cfg);
 	}
 	
 	private static void saveFile(File f, YamlConfiguration cfg) { saveFile(f, cfg, "Failed to save file " + f.getAbsolutePath()); }
@@ -207,6 +217,17 @@ public class TradeSettings implements Listener {
 		
 		if(autoFill) inv.setItem(15, activated);
 		else inv.setItem(15, deactivated);
+
+		if (TradingMain.hasPermission(p, "trading.admin.reloadsettings")) {
+			ItemStack reloadAll = new ItemStack(Material.SLIME_BLOCK);
+			meta = reloadAll.getItemMeta();
+			if (meta != null) {
+				meta.setDisplayName(lang.get(Phrase.TRADE_SETTINGS_REFRESH_ALL_NAME));
+				meta.setLore(Collections.singletonList(lang.get(Phrase.TRADE_SETTINGS_REFRESH_ALL_LORE)));
+				reloadAll.setItemMeta(meta);
+			}
+			inv.setItem(53, reloadAll);
+		}
 		
 		p.openInventory(inv);
 	}
@@ -330,6 +351,18 @@ public class TradeSettings implements Listener {
 				return;
 			case 32:
 				LanguageInventory.openInventory(p);
+				return;
+			case 53:
+				boolean hasPerms = TradingMain.hasPermission(p, "trading.admin.reloadsettings");
+				if (!hasPerms) {
+					// Remove the item if the player lost permission between opening and clicking
+					inv.setItem(53, new ItemStack(Material.AIR));
+					return;
+				}
+
+				GlobalConfig.LoadConfig();
+				Language.InitDefaultOnly();
+				p.sendMessage(lang.get(Phrase.TRADE_SETTINGS_REFRESH_MSG_REFRESHED_SETTINGS));
 		}
 	}
 	

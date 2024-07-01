@@ -16,8 +16,7 @@ import java.util.*;
 
 public final class TradingMain extends JavaPlugin {
 
-	// Todo Reload-Languages Command.
-	// Todo also, fix the language stuff with the glass panes
+	// Maybe Do: Reload global settings option in Admin View of Trade Settings
 
 	// Maybe do a basic own money implementation?
 	// Money implementation from other plugins would only work if the store and read live from the file every time
@@ -28,6 +27,8 @@ public final class TradingMain extends JavaPlugin {
 	
 	/**
 	* Permission Overview:
+	 * trading.admin.* - All of them
+	 * trading.admin.reloadsettings - Reload the settings
 	 * trading.admin.language.* - All of them
 	 * trading.admin.language.create - Create Languages
 	 * trading.admin.language.reload - Reload Languages
@@ -54,6 +55,25 @@ public final class TradingMain extends JavaPlugin {
 	public void onDisable() {
 		// Plugin shutdown logic
 		TradeInventoryEventHandler.CancelAllTrades();
+	}
+
+	/**
+	 * If a player is OP or has the given permission, or any parent permission with .*
+	 * @param p The player.
+	 * @param permission The permission
+	 * @return True if the player is OP or should have that permission
+	 */
+	public static boolean hasPermission(Player p, String permission) {
+		if (p.isOp()) return true;
+		if (p.hasPermission("*")) return true;
+		if (!permission.contains(".")) return p.hasPermission(permission);
+		String[] split = permission.split(".");
+		StringBuilder perm = new StringBuilder(split[0]);
+		for (int i = 1; i < split.length; ++i) {
+			if (p.hasPermission(perm.toString() + ".*")) return true;
+			perm.append(split[i]);
+		}
+		return p.hasPermission(perm.toString());
 	}
 	
 	public static ItemStack getConfirmRedOwn(Player player) { return getConfirmRedOwn(player == null ? null : player.getUniqueId()); }

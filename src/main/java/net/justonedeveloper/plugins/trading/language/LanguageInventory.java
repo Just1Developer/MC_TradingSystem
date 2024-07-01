@@ -1,5 +1,6 @@
 package net.justonedeveloper.plugins.trading.language;
 
+import net.justonedeveloper.plugins.trading.main.TradingMain;
 import net.justonedeveloper.plugins.trading.settings.TradeSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -11,6 +12,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -83,7 +85,7 @@ public class LanguageInventory implements Listener {
 			meta.setDisplayName("§d§l" + lang2.LanguageName);
 			if(lang2.LanguageCode.equals(lang.LanguageCode))
 			{
-				meta.setLore(Arrays.asList("§7Code: " + lang2.LanguageCode, lang.get(Phrase.TRADE_SETTINGS_INVENTORY_ENABLED_NAME)));
+				meta.setLore(Arrays.asList("§7Code: " + lang2.LanguageCode, lang.get(Phrase.TRADE_SETTINGS_INVENTORY_SELECTED_NAME)));
 				meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
 				meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			}
@@ -94,7 +96,7 @@ public class LanguageInventory implements Listener {
 			item.setItemMeta(meta);
 			inv.setItem(index, item);
 			
-			if(hasPerms)
+			if (hasPerms)
 			{
 				ItemStack edit = new ItemStack(Material.IRON_AXE);
 				meta = edit.getItemMeta();
@@ -127,6 +129,16 @@ public class LanguageInventory implements Listener {
 			meta.setDisplayName(lang.get(Phrase.TRADE_LANG_SETTINGS_NEXT_PAGE_NAME));
 			item.setItemMeta(meta);
 			inv.setItem(invSize - 1, item);
+		}
+
+		if (hasPerms) {
+			ItemStack refreshLangs = new ItemStack(Material.SLIME_BLOCK);
+			meta = refreshLangs.getItemMeta();
+			assert meta != null;
+			meta.setDisplayName(lang.get(Phrase.TRADE_LANG_SETTINGS_REFRESH_LANGS_NAME));
+			meta.setLore(Collections.singletonList(lang.get(Phrase.TRADE_LANG_SETTINGS_REFRESH_LANGS_LORE)));
+			refreshLangs.setItemMeta(meta);
+			inv.setItem(8, refreshLangs);
 		}
 		
 		ItemStack backToSettings = new ItemStack(Material.REDSTONE);
@@ -254,6 +266,31 @@ public class LanguageInventory implements Listener {
 			TradeSettings.openInventory(p);
 			return;
 		}
+
+		boolean hasPerms = p.isOp() || p.hasPermission("trading.admin.language.edit") || p.hasPermission("trading.admin.language.*");
+
+		if(rawSlot == 8 && currentItem.hasItemMeta() && currentItem.getItemMeta().hasDisplayName()
+				&& currentItem.getItemMeta().getDisplayName().equals(lang.get(Phrase.TRADE_LANG_SETTINGS_REFRESH_LANGS_NAME)))
+		{
+			if (!hasPerms) {
+				// Remove the item if the player lost permission between opening and clicking
+				inv.setItem(8, new ItemStack(Material.AIR));
+				return;
+			}
+
+			// Titles may change
+			List<Player> reopenFor = new ArrayList<>();
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				InventoryView view = player.getOpenInventory();
+				if (!view.getTitle().equals(Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE).replace("%page%", "" + CurrentPage))) continue;
+				reopenFor.add(player);
+			}
+
+			Language.ReInit();
+			// Refresh Language View for all Players who currently have it open.
+			for (Player player : reopenFor) openInventory(player);
+			return;
+		}
 		
 		if(rawSlot == 18 || rawSlot == 27)
 		{
@@ -283,7 +320,12 @@ public class LanguageInventory implements Listener {
 		{
 			// Third or fourth row
 			// Definitely 'Edit language' item
-			
+
+			if (!hasPerms) {
+				// Remove the item if the player lost permission between opening and clicking
+				inv.setItem(rawSlot, new ItemStack(Material.AIR));
+				return;
+			}
 			if(!Language.exists(code))
 			{
 				p.sendMessage(lang.get(Phrase.ERROR_LANGUAGE_NOT_EXIST));
@@ -357,7 +399,7 @@ public class LanguageInventory implements Listener {
 	
 	public static void openEditLanguageInventory(Player p, Language lang, int page)
 	{
-		if(!p.isOp() && !p.hasPermission("trading.admin.language.edit") && !p.hasPermission("trading.admin.language.*")) return;
+		if(!TradingMain.hasPermission(p, "trading.admin.language.edit")) return;
 		Inventory inv = Bukkit.createInventory(null, 27, Language.get(p, Phrase.LANGUAGE_EDIT_INVENTORY_TITLE).replace("%lang%", lang.LanguageName));
 		UUID uuid = p.getUniqueId();
 		Language langPlayer = Language.getLanguage(uuid);
