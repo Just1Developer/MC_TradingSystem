@@ -148,7 +148,7 @@ public class Trade {
 			if (IsConfirmed(p1)) {
 				ToggleTradeConfirm(uuidPlayer1);
 			}
-			p1.sendMessage(Language.get(Player2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
+			p1.sendMessage(Language.get(p1, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
 			concludeXPSettings(Player2);
 		} else if (isPlayer2EditingXP) {
 			setXPTradeItemBar(Player2);
@@ -212,8 +212,10 @@ public class Trade {
 			inv.setItem(i * 9 + 4, EmptyStack);	// Middle
 		}
 		
-		inv.setItem(22, TradingMain.getXPActivate(Trader));	// Add XP
-		inv.setItem(XP_OVERVIEW_SLOT, TradingMain.getXPOverviewItem(this, Trader));
+		if (TradingMain.isXPTradingEnabled()) {
+			inv.setItem(22, TradingMain.getXPActivate(Trader));    // Add XP
+			inv.setItem(XP_OVERVIEW_SLOT, TradingMain.getXPOverviewItem(this, Trader));
+		}
 		return inv;
 	}
 	
@@ -535,6 +537,28 @@ public class Trade {
 		SchedulerRunning = true;
 		ConfirmStage = 0;
 		ConfirmScheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(TradingMain.main, () -> {
+			
+			Player p1 = Bukkit.getPlayer(uuidPlayer1);
+			Player p2 = Bukkit.getPlayer(uuidPlayer1);
+			if (p1 == null || p2 == null) {
+				ToggleTradeConfirm(uuidPlayer1);
+				ToggleTradeConfirm(uuidPlayer2);
+				return;
+			}
+			
+			if (tradedXPPlayer1 < p1.getTotalExperience()) {
+				ToggleTradeConfirm(uuidPlayer1);
+				p1.sendMessage(Language.get(p1, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF));
+				p2.sendMessage(Language.get(p2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
+				return;
+			}
+			
+			if (tradedXPPlayer2 < p2.getTotalExperience()) {
+				ToggleTradeConfirm(uuidPlayer2);
+				p2.sendMessage(Language.get(p2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF));
+				p1.sendMessage(Language.get(p1, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
+				return;
+			}
 			
 			if(ConfirmStage == 9)
 			{

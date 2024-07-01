@@ -29,7 +29,7 @@ public class Language {
 		PHRASE_DEFAULTS.put(Phrase.ERROR_PLAYER_NOT_ONLINE, "§cCould not find player §7%name%§c.");
 		PHRASE_DEFAULTS.put(Phrase.ERROR_SENDER_NOT_PLAYER, "§cThis command is for players only!");
 		PHRASE_DEFAULTS.put(Phrase.ERROR_PLAYER_IN_SPECTATOR_MODE, "§cYou cannot accept trades while in spectator mode!");
-		PHRASE_DEFAULTS.put(Phrase.ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE, "§7%name% §7cannot trade right now.");
+		PHRASE_DEFAULTS.put(Phrase.ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE, "§7%name% §ccannot trade right now.");
 		PHRASE_DEFAULTS.put(Phrase.ERROR_TRADE_COMMAND_HELP, "§cError: Unknown usage of /trade. Instead, try:\n§e/trade §7[player]§8, §e/trade <accept, decline, cancel> §7[player] §8or §e/trade language ...");
 		PHRASE_DEFAULTS.put(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP, "§cError: Unknown usage of /trade language. Instead, try:\n§e/trade language <create/reload/edit/reset/delete> <LanguageCode> §7[for create: LanguageName]");
 		PHRASE_DEFAULTS.put(Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP_CREATE, "§cError: Unknown usage of /trade language create. Instead, try:\n§e/trade language create <LanguageCode> <LanguageName>");
@@ -43,11 +43,11 @@ public class Language {
 		PHRASE_DEFAULTS.put(Phrase.TRADE_DENY_TRY_ACCEPT_NO_OFFER, "§cYou have no pending trade offer from §7%name%§c.");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_DENY_TRY_CANCEL_NO_OFFER, "§cYou have no pending trade offer to §7%name%§c.");
 		// Items
-		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_CONFIRM_TRADE, "§c§lConfirm Trade");
+		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_CONFIRM_TRADE, "§c§lConfirm trade");
 		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_TRADE_CONFIRMED, "§a§lTrade confirmed");
 		PHRASE_DEFAULTS.put(Phrase.ITEM_LORE_CLICK_TO_RESCIND, "§cClick to rescind offer");
-		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_PARTNER_NOT_CONFIRMED, "§c§lPartner has not confirmed Trade");
-		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_PARTNER_CONFIRMED, "§a§lPartner has confirmed Trade");
+		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_PARTNER_NOT_CONFIRMED, "§c§lPartner has not confirmed trade");
+		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_PARTNER_CONFIRMED, "§a§lPartner has confirmed trade");
 		PHRASE_DEFAULTS.put(Phrase.ITEM_NAME_PROCESSING_TRADE, "§b§lTrading in progress...");
 		// Trade Request Messages
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SENT_MESSAGE_BASE, "§eYou invited §7%name% §eto trade. They have §7%seconds% §eseconds to accept.");
@@ -81,7 +81,7 @@ public class Language {
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_MULTIPLE_INACTIVE_LORE, "§8Click to enable");
 		// Settings inventory
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_ACCEPT_NAME, "§aAuto-Accept Trades");
-		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME, "§eTrade on Request");
+		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_TRADE_ON_REQUEST_NAME, "§eTrade on Request §7(Recommended)");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_DECLINE_NAME, "§cAuto-Decline Trades");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_NAME, "§dAuto-Collect Items");
 		PHRASE_DEFAULTS.put(Phrase.TRADE_SETTINGS_INVENTORY_AUTO_COLLECT_ITEMS_LORE, "Items are automatically added to\nyour inventory post-trade.");
@@ -138,9 +138,9 @@ public class Language {
 		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_GUI_OVERVIEW_LORE_OTHER, "§7%name% traded XP: %points%");
 		// XP-Trading
 		//PHRASE_DEFAULTS.put(Phrase.XP_TRADING_STILL_EDITING_XP_NO_CONFIRM, "§cCannot confirm trade, you have to confirm your traded XP first!");
-		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_STILL_EDITING_XP_NO_CONFIRM_LORE, "First confirm your traded XP!");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_STILL_EDITING_XP_NO_CONFIRM_LORE, "First confirm your traded XP. (The bottle)");
 		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF, "§cYour XP fell below the amount you locked in for the trade, the amount of traded XP has been adjusted accordingly.");
-		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER, "§cYour trade partner changed XP. You may need to re-confirm the trade.");
+		PHRASE_DEFAULTS.put(Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER, "§cYour trade partner changed XP unexpectedly. You may need to re-confirm the trade.");
 	}
 	
 	static File folder = new File(TradingMain.main.getDataFolder(), "Languages/");

@@ -2,7 +2,6 @@ package net.justonedeveloper.plugins.trading.main;
 
 import net.justonedeveloper.plugins.trading.language.Language;
 import net.justonedeveloper.plugins.trading.language.Phrase;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -33,7 +32,6 @@ public class TradeInventoryEventHandler implements Listener {
 	@EventHandler
 	public void OnInventoryClick(InventoryClickEvent e)
 	{
-		Bukkit.broadcastMessage("0");
 		if(e.getClickedInventory() == null) return;
 		if(!Trades.containsKey(e.getWhoClicked().getUniqueId())) return;	// Player has trade inventory open
 		
@@ -130,30 +128,22 @@ public class TradeInventoryEventHandler implements Listener {
 			return;
 		}
 
-		Bukkit.broadcastMessage("1");
 		if (e.getClick() == ClickType.NUMBER_KEY)
 		{
-			Bukkit.broadcastMessage("2");
 			//int hotbarSlot = e.getHotbarButton();
 			//ItemStack hotbarItem = e.getWhoClicked().getInventory().getItem(hotbarSlot);
 
 			// We want the item in the slot and the item in the hotbar. Cancel the swap if it's illegal.
 			// First, determine if the Trade inventory was manipulated.
-			Bukkit.broadcastMessage("§eA ClickedInv + " + e.getClickedInventory());
-			Bukkit.broadcastMessage("§eB Inv + " + e.getInventory());
-			Bukkit.broadcastMessage("§eC Raw + " + e.getRawSlot());
-			Bukkit.broadcastMessage("§eD Slot + " + e.getSlot());
 			if(e.getRawSlot() != e.getSlot())	// Click happened in lower inventory, so we don't care
 			{
 				// Cannot be illegal swap. Return immediately.
 				return;
 			}
-			Bukkit.broadcastMessage("3");
 			
 			// Definitely probably an illegal swap. If not, it won't do anything, so there
 			// is also no harm in cancelling it.
 			e.setCancelled(true);
-			Bukkit.broadcastMessage("4");
 
 			// If has confirmed or illegal slots, block action
 			if(col > 3 || row == 0 || row >= 4 || HasConfirmed)

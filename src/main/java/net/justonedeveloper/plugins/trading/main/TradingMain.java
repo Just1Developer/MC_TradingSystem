@@ -76,6 +76,10 @@ public final class TradingMain extends JavaPlugin {
 		return p.hasPermission(perm.toString());
 	}
 	
+	public static boolean isXPTradingEnabled() {
+		return GlobalConfig.EnableXPTrading;
+	}
+	
 	public static ItemStack getConfirmRedOwn(Player player) { return getConfirmRedOwn(player == null ? null : player.getUniqueId()); }
 	public static ItemStack getConfirmRedOwn(UUID uuid)
 	{
