@@ -1,7 +1,6 @@
 package net.justonedeveloper.plugins.trading.language;
 
 import net.justonedeveloper.plugins.trading.main.GlobalConfig;
-import net.justonedeveloper.plugins.trading.main.TradeCommand;
 import net.justonedeveloper.plugins.trading.main.TradingMain;
 import net.justonedeveloper.plugins.trading.settings.TradeSettings;
 import org.bukkit.Bukkit;
@@ -17,9 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class Language {
 	
+	private static final Pattern LANG_FILE_REGEX = Pattern.compile("^[a-z]{2}-[A-Z]{2}$");
 	private static final Map<Phrase, String> PHRASE_DEFAULTS = new HashMap<>();
 	static {
 		PHRASE_DEFAULTS.put(Phrase.ERROR_LANGUAGE_WAS_DELETED, "§cYour selected language (%lang%) has been deleted. Your language has been reset to %defaultLang%.");
@@ -161,10 +162,14 @@ public class Language {
 		for(File f : files)
 		{
 			String code = f.getName().substring(0, f.getName().length() - 4);
-			if(TradeCommand.incorrectLanguageCodeFormat(code)) continue;
-			if(LanguageIDs.contains(code)) continue;
+			if (isInvalidLanguageCode(code)) continue;
+			if (LanguageIDs.contains(code)) continue;
 			new Language(code);
 		}
+	}
+	
+	public static boolean isInvalidLanguageCode(String code) {
+		return !LANG_FILE_REGEX.matcher(code).matches();
 	}
 
 	public static void ReInit()

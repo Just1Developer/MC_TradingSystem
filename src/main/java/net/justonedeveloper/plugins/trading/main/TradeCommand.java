@@ -271,7 +271,7 @@ public class TradeCommand implements CommandExecutor {
 		}
 		
 		// Check language format:
-		if(incorrectLanguageCodeFormat(args[2]))
+		if(Language.isInvalidLanguageCode(args[2]))
 		{
 			sender.sendMessage(Language.get(p, Phrase.ERROR_INCORRECT_LANGUAGE_CODE_FORMAT));
 			return false;
@@ -349,16 +349,6 @@ public class TradeCommand implements CommandExecutor {
 				sender.sendMessage(Language.get(p, Phrase.ERROR_TRADE_LANGUAGE_COMMAND_HELP));
 				return false;
 		}
-	}
-	
-	public static boolean incorrectLanguageCodeFormat(String code)
-	{
-		if(code.length() != 5) return true;
-		if(code.charAt(2) != '-') return true;
-		String sub = code.substring(0, 2);
-		if(!sub.toLowerCase().equals(sub)) return true;
-		sub = code.substring(2, 2);
-		return !sub.toUpperCase().equals(sub);
 	}
 	
 }
