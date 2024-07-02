@@ -1,9 +1,6 @@
 package net.justonedeveloper.plugins.trading.main;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import javax.swing.text.html.HTMLDocument;
 
 public class XPCalc {
 
