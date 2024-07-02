@@ -1,5 +1,6 @@
 package net.justonedeveloper.plugins.trading.language;
 
+import net.justonedeveloper.plugins.trading.main.InventoryCloseResult;
 import net.justonedeveloper.plugins.trading.main.TradingMain;
 import net.justonedeveloper.plugins.trading.settings.TradeSettings;
 import org.bukkit.Bukkit;
@@ -278,17 +279,12 @@ public class LanguageInventory implements Listener {
 				return;
 			}
 
-			// Titles may change
-			List<Player> reopenFor = new ArrayList<>();
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				InventoryView view = player.getOpenInventory();
-				if (!view.getTitle().equals(Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE).replace("%page%", "" + CurrentPage))) continue;
-				reopenFor.add(player);
-			}
+			InventoryCloseResult result = TradingMain.closeAllTradingRelatedInventories();
 
 			Language.ReInit();
-			// Refresh Language View for all Players who currently have it open.
-			for (Player player : reopenFor) openInventory(player);
+
+			// Refresh all views for all players who currently have it open.
+			result.reopen();
 			return;
 		}
 		
@@ -311,7 +307,7 @@ public class LanguageInventory implements Listener {
 		assert langItem.getItemMeta() != null;
 		if(!langItem.getItemMeta().hasLore()) return;
 		assert langItem.getItemMeta().getLore() != null;
-		if(langItem.getItemMeta().getLore().size() == 0) return;
+		if(langItem.getItemMeta().getLore().isEmpty()) return;
 		
 		String code = langItem.getItemMeta().getLore().get(0);
 		code = code.substring(code.length() - 5);
@@ -334,7 +330,7 @@ public class LanguageInventory implements Listener {
 			openEditLanguageInventory(p, Language.getLanguage(code), CurrentPage);
 			return;
 		}
-		if(langItem.getItemMeta().getEnchants().size() > 0) return;		// Enchanted Item here = Language is already selected
+		if(!langItem.getItemMeta().getEnchants().isEmpty()) return;		// Enchanted Item here = Language is already selected
 		
 		// Language Selection
 		if(!Language.exists(code))
@@ -360,7 +356,7 @@ public class LanguageInventory implements Listener {
 				assert currentItem.getItemMeta() != null;
 				if(!currentItem.getItemMeta().hasLore()) return;
 				assert currentItem.getItemMeta().getLore() != null;
-				if(currentItem.getItemMeta().getLore().size() == 0) return;
+				if(currentItem.getItemMeta().getLore().isEmpty()) return;
 				
 				String l = currentItem.getItemMeta().getLore().get(0);
 				try {

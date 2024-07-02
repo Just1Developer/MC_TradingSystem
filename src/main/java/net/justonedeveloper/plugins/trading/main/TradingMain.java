@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -54,7 +55,56 @@ public final class TradingMain extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		// Plugin shutdown logic
+		closeAllTradingRelatedInventories();
+	}
+
+	public static InventoryCloseResult closeAllTradingRelatedInventories() {
 		TradeInventoryEventHandler.CancelAllTrades();
+		InventoryCloseResult result = new InventoryCloseResult();
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			InventoryView view = p.getOpenInventory();
+
+			// For everything with a variable, compare an item, the prefix and the suffix
+
+			// Trailing space to ensure suffix
+			String title = view.getTitle() + " ";
+			Bukkit.broadcastMessage("§eTitle: " + title);
+
+			// Test for language selection inventory
+			String langInv = Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE) + " ";
+			Bukkit.broadcastMessage("§blangInv: " + langInv);
+			if (langInv.contains("%page%")) {
+				String[] invTitle = langInv.split("%page%");
+				if (title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
+					&& view.getItem(0) != null && Objects.requireNonNull(view.getItem(0)).getType() == Material.REDSTONE) {
+					result.put(p, LanguageInventory::openInventory);
+					p.closeInventory();
+					continue;
+				}
+			} else if(langInv.equals(title)) {
+				p.closeInventory();
+				result.put(p, LanguageInventory::openInventory);
+				continue;
+			}
+
+			// Test for trade settings inventory
+			langInv = Language.get(p, Phrase.TRADE_SETTINGS_INVENTORY_TITLE) + " ";
+			Bukkit.broadcastMessage("§dTradeInv: " + langInv);
+			if (langInv.contains("%name%")) {
+				String[] invTitle = langInv.split("%name%");
+				Bukkit.broadcastMessage("§barray: " + Arrays.toString(invTitle));
+				if (title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
+						&& view.getItem(14) != null && Objects.requireNonNull(view.getItem(14)).getType() == Material.ENDER_CHEST) {
+					result.put(p, TradeSettings::openInventory);
+					p.closeInventory();
+				}
+			} else if(langInv.equals(title)) {
+				p.closeInventory();
+				result.put(p, TradeSettings::openInventory);
+			}
+		}
+
+		return result;
 	}
 
 	/**
