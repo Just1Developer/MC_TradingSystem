@@ -17,15 +17,11 @@ import java.util.*;
 
 public final class TradingMain extends JavaPlugin {
 
-	// Maybe Do: Reload global settings option in Admin View of Trade Settings
-
 	// Maybe do a basic own money implementation?
 	// Money implementation from other plugins would only work if the store and read live from the file every time
 	
 	public static TradingMain main;
-	
-	// For future version: Reload Language feature so server restart is not required (done?)
-	
+
 	/**
 	* Permission Overview:
 	 * trading.admin.* - All of them
@@ -68,11 +64,9 @@ public final class TradingMain extends JavaPlugin {
 
 			// Trailing space to ensure suffix
 			String title = view.getTitle() + " ";
-			Bukkit.broadcastMessage("§eTitle: " + title);
 
 			// Test for language selection inventory
 			String langInv = Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE) + " ";
-			Bukkit.broadcastMessage("§blangInv: " + langInv);
 			if (langInv.contains("%page%")) {
 				String[] invTitle = langInv.split("%page%");
 				if (title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
@@ -89,10 +83,8 @@ public final class TradingMain extends JavaPlugin {
 
 			// Test for trade settings inventory
 			langInv = Language.get(p, Phrase.TRADE_SETTINGS_INVENTORY_TITLE) + " ";
-			Bukkit.broadcastMessage("§dTradeInv: " + langInv);
 			if (langInv.contains("%name%")) {
 				String[] invTitle = langInv.split("%name%");
-				Bukkit.broadcastMessage("§barray: " + Arrays.toString(invTitle));
 				if (title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
 						&& view.getItem(14) != null && Objects.requireNonNull(view.getItem(14)).getType() == Material.ENDER_CHEST) {
 					result.put(p, TradeSettings::openInventory);
