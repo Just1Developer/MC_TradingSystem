@@ -319,6 +319,7 @@ public class Language {
 			CreateLanguageFile(code, LanguageName);
 		}
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
+		HashMap<Phrase, String> updates = new HashMap<>();
 		for (Phrase phrase : Phrase.values())
 		{
 			String s = cfg.getString(phrase.toString());
@@ -326,9 +327,16 @@ public class Language {
 			{
 				if(code.equals(DefaultLanguage)) s = PHRASE_DEFAULTS.getOrDefault(phrase, DefaultValueString);
 				else s = getPhrase(phrase);		// Get Default Language Phrase
-				try { cfg.set(phrase.toString(), s); cfg.save(f); } catch (IOException ignored) { }
+				updates.put(phrase, s);
 			}
 			Dictionary.put(phrase, s);
+		}
+		if (!updates.isEmpty()) {
+			cfg = YamlConfiguration.loadConfiguration(new File(f.getName()));
+			for (Map.Entry<Phrase, String> entry : updates.entrySet()) {
+				cfg.set(entry.getKey().toString(), entry.getValue());
+			}
+			try { cfg.save(f); } catch (IOException ignored) { }
 		}
 		this.LanguageName = cfg.getString("Language.LanguageName");
 		this.ItemMaterial = Material.valueOf(cfg.getString("Language.ItemMaterial"));

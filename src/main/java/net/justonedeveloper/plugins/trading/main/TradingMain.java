@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -45,7 +46,7 @@ public final class TradingMain extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new TradeInventoryEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new TradeSettings(), this);
 		Bukkit.getPluginManager().registerEvents(new LanguageInventory(), this);
-		this.getCommand("trade").setExecutor(new TradeCommand());
+		Objects.requireNonNull(this.getCommand("trade")).setExecutor(new TradeCommand());
 	}
 	
 	@Override
@@ -61,42 +62,71 @@ public final class TradingMain extends JavaPlugin {
 			InventoryView view = p.getOpenInventory();
 
 			// For everything with a variable, compare an item, the prefix and the suffix
-
-			// Trailing space to ensure suffix
-			String title = view.getTitle() + " ";
-
-			// Test for language selection inventory
-			String langInv = Language.get(p, Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE) + " ";
-			if (langInv.contains("%page%")) {
-				String[] invTitle = langInv.split("%page%");
-				if (title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
-					&& view.getItem(0) != null && Objects.requireNonNull(view.getItem(0)).getType() == Material.REDSTONE) {
-					result.put(p, LanguageInventory::openInventory);
-					p.closeInventory();
-					continue;
-				}
-			} else if(langInv.equals(title)) {
-				p.closeInventory();
+			
+			if (isLanguageInventory(p, view)) {
 				result.put(p, LanguageInventory::openInventory);
+				p.closeInventory();
 				continue;
 			}
-
-			// Test for trade settings inventory
-			langInv = Language.get(p, Phrase.TRADE_SETTINGS_INVENTORY_TITLE) + " ";
-			if (langInv.contains("%name%")) {
-				String[] invTitle = langInv.split("%name%");
-				if (title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
-						&& view.getItem(14) != null && Objects.requireNonNull(view.getItem(14)).getType() == Material.ENDER_CHEST) {
-					result.put(p, TradeSettings::openInventory);
-					p.closeInventory();
-				}
-			} else if(langInv.equals(title)) {
+			
+			if (isLanguageEditInventory(p, view)) {
+				result.put(p, LanguageInventory::openInventory);
 				p.closeInventory();
+				continue;
+			}
+			
+			if (isSettingsInventory(p, view)) {
 				result.put(p, TradeSettings::openInventory);
+				p.closeInventory();
 			}
 		}
 
 		return result;
+	}
+	
+	public static boolean isLanguageInventory(Player p, InventoryView view) {
+		return isLanguageInventory(Language.getLanguage(p), view);
+	}
+	public static boolean isLanguageInventory(Language lang, InventoryView view) {
+		// Trailing space to ensure suffix
+		String title = view.getTitle() + " ";
+		String realTitle = lang.get(Phrase.TRADE_LANG_SETTINGS_INVENTORY_TITLE) + " ";
+		if (realTitle.contains("%page%")) {
+			String[] invTitle = realTitle.split("%page%");
+			return title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
+					&& view.getItem(0) != null && Objects.requireNonNull(view.getItem(0)).getType() == Material.REDSTONE;
+		}
+		return realTitle.equals(title);
+	}
+	
+	public static boolean isLanguageEditInventory(Player p, InventoryView view) {
+		return isLanguageEditInventory(Language.getLanguage(p), view);
+	}
+	public static boolean isLanguageEditInventory(Language lang, InventoryView view) {
+		// Trailing space to ensure suffix
+		String title = view.getTitle() + " ";
+		String realTitle = lang.get(Phrase.LANGUAGE_EDIT_INVENTORY_TITLE) + " ";
+		if (realTitle.contains("%lang%")) {
+			String[] invTitle = realTitle.split("%lang%");
+			return title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
+					&& view.getItem(0) != null && Objects.requireNonNull(view.getItem(0)).getType() == Material.REDSTONE;
+		}
+		return realTitle.equals(title);
+	}
+	
+	public static boolean isSettingsInventory(Player p, InventoryView view) {
+		return isSettingsInventory(Language.getLanguage(p), view);
+	}
+	public static boolean isSettingsInventory(Language lang, InventoryView view) {
+		// Trailing space to ensure suffix
+		String title = view.getTitle() + " ";
+		String realTitle = lang.get(Phrase.TRADE_SETTINGS_INVENTORY_TITLE) + " ";
+		if (realTitle.contains("%name%")) {
+			String[] invTitle = realTitle.split("%name%");
+			return title.startsWith(invTitle[0]) && title.endsWith(invTitle[invTitle.length - 1])
+					&& view.getItem(14) != null && Objects.requireNonNull(view.getItem(14)).getType() == Material.ENDER_CHEST;
+		}
+		return realTitle.equals(title);
 	}
 
 	/**
