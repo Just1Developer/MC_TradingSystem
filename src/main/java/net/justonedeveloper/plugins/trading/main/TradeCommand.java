@@ -21,9 +21,9 @@ import java.util.*;
 
 public class TradeCommand implements CommandExecutor {
 
-	private static HashMap<UUID, Long> lastTimeAutoAccept = new HashMap<>();
-	public static final int AutoAcceptCooldown = 10000;
-	public static final int TradeRequestTimeMS = 30000;
+	private static final HashMap<UUID, Long> lastTimeAutoAccept = new HashMap<>();
+	public static int AutoAcceptCooldown = 10000;
+	public static int TradeRequestTimeMS = 30000;
 	public static HashMap<UUID, TradeOfferCollection> TradeRequests = new HashMap<>();
 	
 	@Override

@@ -19,7 +19,9 @@ public class GlobalConfig {
 	private static final String DefaultLanguage = "en-US";
 	public static final Material DefaultMaterial = Material.DARK_OAK_SIGN;
 	private static final boolean DefaultXPTradingEnabled = true;
-	
+	private static final int DefaultAutoAcceptCooldown = 10000;
+	private static final int DefaultTradeRequestTimeMS = 30000;
+
 	public static void LoadConfig()
 	{
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
@@ -29,10 +31,14 @@ public class GlobalConfig {
 			cfg.addDefault("Default Language", "en-US");
 			cfg.addDefault("Default Language Item", Material.DARK_OAK_SIGN.toString());
 			cfg.addDefault("Enable XP-Trading", true);
+			cfg.addDefault("Auto Accept Trades Cooldown", DefaultAutoAcceptCooldown);
+			cfg.addDefault("Trade Request Duration Length", DefaultTradeRequestTimeMS);
 			saveCfg(cfg);
 			Language.DefaultLanguage = DefaultLanguage;
 			DefaultLanguageItem = DefaultMaterial;
 			EnableXPTrading = DefaultXPTradingEnabled;
+			TradeCommand.AutoAcceptCooldown = DefaultAutoAcceptCooldown;
+			TradeCommand.TradeRequestTimeMS = DefaultTradeRequestTimeMS;
 			return;
 		}
 		
@@ -41,7 +47,9 @@ public class GlobalConfig {
 		Language.DefaultLanguage = getOrDefaultString("Default Language", cfg, updateThese);
 		DefaultLanguageItem = getOrDefaultMaterial("Default Language Item", cfg, updateThese);
 		EnableXPTrading = getOrDefaultBoolean("Enable XP-Trading", cfg, updateThese);
-		
+		TradeCommand.AutoAcceptCooldown = getOrDefaultInteger("Auto Accept Trades Cooldown", cfg, updateThese, DefaultAutoAcceptCooldown);
+		TradeCommand.TradeRequestTimeMS = getOrDefaultInteger("Trade Request Duration Length", cfg, updateThese, DefaultTradeRequestTimeMS);
+
 		if (updateThese.isEmpty()) return;
 		cfg = YamlConfiguration.loadConfiguration(f);	// Reload config
 		for (Map.Entry<String, Object> entry : updateThese.entrySet()) {
@@ -77,6 +85,13 @@ public class GlobalConfig {
 		if (cfg.isSet(key)) return cfg.getBoolean(key);
 		updateThese.put(key, DefaultXPTradingEnabled);
 		return DefaultXPTradingEnabled;
+	}
+
+	private static int getOrDefaultInteger(String key, YamlConfiguration cfg, Map<String, Object> updateThese, int defaultValue)
+	{
+		if (cfg.isSet(key)) return cfg.getInt(key);
+		updateThese.put(key, defaultValue);
+		return defaultValue;
 	}
 	
 	public static void saveCfg(YamlConfiguration cfg)
