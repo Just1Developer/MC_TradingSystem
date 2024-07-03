@@ -20,7 +20,9 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class TradeCommand implements CommandExecutor {
-	
+
+	private static HashMap<UUID, Long> lastTimeAutoAccept = new HashMap<>();
+	public static final int AutoAcceptCooldown = 10000;
 	public static final int TradeRequestTimeMS = 30000;
 	public static HashMap<UUID, TradeOfferCollection> TradeRequests = new HashMap<>();
 	
@@ -72,8 +74,9 @@ public class TradeCommand implements CommandExecutor {
 					p.sendMessage(Language.get(p, Phrase.ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE, pl.getName()));
 					return true;
 				}
-				pl.sendMessage(Language.get(pl, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT, p.getName()));
-				p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED, pl.getName()));
+				pl.closeInventory();
+				pl.sendMessage(Language.get(pl, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED, p.getName()));
+				p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT, pl.getName()));
 				new Trade(pl, p);
 				return true;
 			}
@@ -84,10 +87,12 @@ public class TradeCommand implements CommandExecutor {
 				p.sendMessage(Language.get(p, Phrase.TRADE_DENY_NO_ACCEPT, pl.getName()));
 				return true;
 			}
-			else if(PlayerPrivacySettingOtherPlayer == PrivacySettingValue.AUTO_ACCEPT)
+			else if(PlayerPrivacySettingOtherPlayer == PrivacySettingValue.AUTO_ACCEPT
+				&& System.currentTimeMillis() > lastTimeAutoAccept.getOrDefault(pl.getUniqueId(), 0L))
 			{
-				pl.sendMessage(Language.get(pl, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT, p.getName()));
-				p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED, pl.getName()));
+				lastTimeAutoAccept.put(pl.getUniqueId(), System.currentTimeMillis() + AutoAcceptCooldown);
+				pl.sendMessage(Language.get(pl, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED, p.getName()));
+				p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT, pl.getName()));
 				new Trade(pl, p);
 				return true;
 			}

@@ -43,7 +43,7 @@ public class TradeInventoryEventHandler implements Listener {
 		int col = slot % 9;
 		boolean HasConfirmed = trade.IsConfirmed(uuid);
 		
-		if(slot == 22) {
+		if(slot == 22 && TradingMain.isXPTradingEnabled()) {
 			e.setCancelled(true);
 			if (trade.isEditingXP(p)) {
 				trade.concludeXPSettings(p);
@@ -58,7 +58,7 @@ public class TradeInventoryEventHandler implements Listener {
 			
 			return;
 		}
-		else if(slot < 5 && e.getCurrentItem() != null && !e.getCurrentItem().getType().isAir() && !e.getCurrentItem().equals(Trade.EmptyStack)) {
+		if(slot < 5 && e.getCurrentItem() != null && !e.getCurrentItem().getType().isAir() && !e.getCurrentItem().equals(Trade.EmptyStack)) {
 			e.setCancelled(true);
 			int delta;
 			switch (slot) {
@@ -85,7 +85,9 @@ public class TradeInventoryEventHandler implements Listener {
 			trade.addTradedXP(p, delta);
 			trade.setXPTradeItemBar(p);
 			return;
-		} else if (slot == Trade.XP_OVERVIEW_SLOT) {
+		}
+
+		if (slot == Trade.XP_OVERVIEW_SLOT && TradingMain.isXPTradingEnabled()) {
 			e.setCancelled(true);
 			if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getType() == Material.ENCHANTED_BOOK) {
 				trade.unenchantXPOverviewItem(e.getWhoClicked().getUniqueId());

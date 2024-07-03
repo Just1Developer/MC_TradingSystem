@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -29,7 +30,7 @@ import java.util.UUID;
 public class TradeSettings implements Listener {
 	
 	// Settings: Anyone can send trades, auto-accept, auto-decline (funny, ik), auto-collect items (maybe overflow stays in inventory), also dont-notify-players-on-cancel
-	
+
 	private static final File folder = new File(TradingMain.main.getDataFolder(), "UserData");
 	
 	private static final PrivacySettingValue DefaultPrivacySettingValue = PrivacySettingValue.REQUEST;
@@ -51,6 +52,13 @@ public class TradeSettings implements Listener {
 			saveFile(f, cfg, "Failed to save user data file for player " + playername + " (UUID: " + playername + ")");
 		}
 		return cfg;
+	}
+
+	@EventHandler
+	public void debug(PlayerMoveEvent e) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			e.getPlayer().sendMessage(p.getName() + " : " + String.valueOf(p.getOpenInventory().getTitle()) + " + " + p.getOpenInventory().getBottomInventory() + " + " + p.getOpenInventory().getTopInventory());
+		}
 	}
 	
 	@EventHandler

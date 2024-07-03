@@ -343,9 +343,18 @@ public class Language {
 			}
 			try { cfg.save(f); } catch (IOException ignored) { }
 		}
-		this.LanguageName = cfg.getString("Language.LanguageName");
-		this.ItemMaterial = Material.valueOf(cfg.getString("Language.ItemMaterial"));
-		if(this.LanguageName == null) this.LanguageName = LanguageName;
+
+		String cfgValue = cfg.getString("Language.LanguageName");
+		this.LanguageName = cfgValue == null ? LanguageName : cfgValue;
+		cfgValue = cfg.getString("Language.ItemMaterial");
+		Material material;
+		try {
+			material = Material.valueOf(cfgValue);
+		} catch (Exception any) {
+			// If any exception occurs, for example nullpointer or the string isnt valid, just use the default item
+			material = GlobalConfig.DefaultMaterial;
+		}
+		this.ItemMaterial = material;
 	}
 	
 	public void reload()

@@ -25,7 +25,7 @@ public class Trade {
 	int totalXPPlayer1, totalXPPlayer2;
 	int deltaLevelXPToNextLevelPlayer1, deltaLevelXPToNextLevelPlayer2;
 	int deltaLevelXPToPrevLevelPlayer1, deltaLevelXPToPrevLevelPlayer2;
-	
+
 	private boolean isPlayer1EditingXP = false;
 	private boolean isPlayer2EditingXP = false;
 	
@@ -298,9 +298,15 @@ public class Trade {
 	
 	private void updateConfirmedXP(Player p) { updateConfirmedXP(p.getUniqueId());	}
 	private void updateConfirmedXP(UUID uuid) {
-		if (Objects.equals(uuid, uuidPlayer1)) confirmedXPPlayer1 = tradedXPPlayer1;
-		else if (Objects.equals(uuid, uuidPlayer2)) confirmedXPPlayer2 = tradedXPPlayer2;
-		updateXPOverviewItem(uuid);
+		boolean changed = false;
+		if (Objects.equals(uuid, uuidPlayer1)) {
+			changed = confirmedXPPlayer1 != tradedXPPlayer1;
+			confirmedXPPlayer1 = tradedXPPlayer1;
+		} else if (Objects.equals(uuid, uuidPlayer2)) {
+			changed = confirmedXPPlayer2 != tradedXPPlayer2;
+			confirmedXPPlayer2 = tradedXPPlayer2;
+		}
+		if (changed) updateXPOverviewItem(uuid);
 	}
 	
 	private void updateXPOverviewItem() {

@@ -17,7 +17,7 @@ public class GlobalConfig {
 	public static Material DefaultLanguageItem;
 	
 	private static final String DefaultLanguage = "en-US";
-	private static final Material DefaultMaterial = Material.DARK_OAK_SIGN;
+	public static final Material DefaultMaterial = Material.DARK_OAK_SIGN;
 	private static final boolean DefaultXPTradingEnabled = true;
 	
 	public static void LoadConfig()
