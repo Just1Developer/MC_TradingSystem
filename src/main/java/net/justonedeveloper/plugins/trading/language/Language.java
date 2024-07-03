@@ -353,6 +353,7 @@ public class Language {
 		} catch (Exception any) {
 			// If any exception occurs, for example nullpointer or the string isnt valid, just use the default item
 			material = GlobalConfig.DefaultMaterial;
+			Bukkit.getLogger().warning(String.format("Failed to parse material for the language %s (%s). Using default material instead.", this.LanguageName, this.LanguageCode));
 		}
 		this.ItemMaterial = material;
 	}
