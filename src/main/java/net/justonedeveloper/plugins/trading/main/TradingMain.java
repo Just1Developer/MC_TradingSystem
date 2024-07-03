@@ -58,26 +58,33 @@ public final class TradingMain extends JavaPlugin {
 
 	public static InventoryCloseResult closeAllTradingRelatedInventories() {
 		TradeInventoryEventHandler.CancelAllTrades();
-		InventoryCloseResult result = new InventoryCloseResult();
+		InventoryCloseResult result;
+		try {
+			result = new InventoryCloseResult();
+		} catch (NoClassDefFoundError ignored) {
+			// For some reason, cache issues can induce this problem
+			// We still want the following logic to happen, so we have to catch the error.
+			result = null;
+		}
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			InventoryView view = p.getOpenInventory();
 
 			// For everything with a variable, compare an item, the prefix and the suffix
 			
 			if (isLanguageInventory(p, view)) {
-				result.put(p, LanguageInventory::openInventory);
+				if (result != null) result.put(p, LanguageInventory::openInventory);
 				p.closeInventory();
 				continue;
 			}
 			
 			if (isLanguageEditInventory(p, view)) {
-				result.put(p, LanguageInventory::openInventory);
+				if (result != null) result.put(p, LanguageInventory::openInventory);
 				p.closeInventory();
 				continue;
 			}
 			
 			if (isSettingsInventory(p, view)) {
-				result.put(p, TradeSettings::openInventory);
+				if (result != null) result.put(p, TradeSettings::openInventory);
 				p.closeInventory();
 			}
 		}

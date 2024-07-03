@@ -1,6 +1,7 @@
 package net.justonedeveloper.plugins.trading.main;
 
 import net.justonedeveloper.plugins.trading.language.Language;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -21,6 +22,9 @@ public class GlobalConfig {
 	private static final boolean DefaultXPTradingEnabled = true;
 	private static final int DefaultAutoAcceptCooldown = 10000;
 	private static final int DefaultTradeRequestTimeMS = 30000;
+	
+	private static final int MinimumAutoAcceptCooldown = 100;
+	private static final int MinimumTradeRequestTimeMS = 2000;
 
 	public static void LoadConfig()
 	{
@@ -50,6 +54,16 @@ public class GlobalConfig {
 		TradeCommand.AutoAcceptCooldown = getOrDefaultInteger("Auto Accept Trades Cooldown", cfg, updateThese, DefaultAutoAcceptCooldown);
 		TradeCommand.TradeRequestTimeMS = getOrDefaultInteger("Trade Request Duration Length", cfg, updateThese, DefaultTradeRequestTimeMS);
 
+		if (TradeCommand.AutoAcceptCooldown < MinimumAutoAcceptCooldown) {
+			Bukkit.getLogger().warning(String.format("Auto Accept cooldown value is below allowed minimum of %d ms. The value will be set to %d ms.", MinimumAutoAcceptCooldown, MinimumAutoAcceptCooldown));
+			TradeCommand.AutoAcceptCooldown = MinimumAutoAcceptCooldown;
+		}
+		
+		if (TradeCommand.TradeRequestTimeMS < MinimumTradeRequestTimeMS) {
+			Bukkit.getLogger().warning(String.format("Trade Request time cooldown value is below allowed minimum of %d ms. The value will be set to %d ms.", MinimumTradeRequestTimeMS, MinimumTradeRequestTimeMS));
+			TradeCommand.TradeRequestTimeMS = MinimumTradeRequestTimeMS;
+		}
+		
 		if (updateThese.isEmpty()) return;
 		cfg = YamlConfiguration.loadConfiguration(f);	// Reload config
 		for (Map.Entry<String, Object> entry : updateThese.entrySet()) {

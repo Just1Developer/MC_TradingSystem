@@ -74,7 +74,9 @@ public class TradeCommand implements CommandExecutor {
 					p.sendMessage(Language.get(p, Phrase.ERROR_OTHER_PLAYER_IN_SPECTATOR_MODE, pl.getName()));
 					return true;
 				}
+				// Always close inventory when it could potentially be open for the other player
 				pl.closeInventory();
+				p.closeInventory();	// Just in case
 				pl.sendMessage(Language.get(pl, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED, p.getName()));
 				p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT, pl.getName()));
 				new Trade(pl, p);
@@ -90,6 +92,9 @@ public class TradeCommand implements CommandExecutor {
 			else if(PlayerPrivacySettingOtherPlayer == PrivacySettingValue.AUTO_ACCEPT
 				&& System.currentTimeMillis() > lastTimeAutoAccept.getOrDefault(pl.getUniqueId(), 0L))
 			{
+				// Always close inventory when it could potentially be open for the other player
+				pl.closeInventory();
+				p.closeInventory();	// Just in case
 				lastTimeAutoAccept.put(pl.getUniqueId(), System.currentTimeMillis() + AutoAcceptCooldown);
 				pl.sendMessage(Language.get(pl, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED, p.getName()));
 				p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT, pl.getName()));
@@ -160,6 +165,9 @@ public class TradeCommand implements CommandExecutor {
 						p.sendMessage(Language.get(p, Phrase.ERROR_PLAYER_IN_SPECTATOR_MODE));
 						return true;
 					}
+					// Always close inventory when it could potentially be open for the other player
+					pl.closeInventory();
+					p.closeInventory();	// Just in case
 					pl.sendMessage(Language.get(pl, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_SENT, p.getName()));
 					p.sendMessage(Language.get(p, Phrase.TRADE_OFFER_RESULT_MESSAGE_ACCEPTED_RECEIVED, pl.getName()));
 					new Trade(pl, p);
@@ -282,7 +290,7 @@ public class TradeCommand implements CommandExecutor {
 			return false;
 		}
 		String code = args[2];
-		
+		Language l;
 		switch(args[1].toLowerCase())
 		{
 			case "create":
@@ -323,7 +331,7 @@ public class TradeCommand implements CommandExecutor {
 				Material old = l2.ItemMaterial;
 				String name = l2.LanguageName;
 				Language.deleteLanguage(code);
-				Language l = new Language(code, name);
+				l = new Language(code, name);
 				l.setItemMaterial(old);
 				sender.sendMessage(Language.get(p, Phrase.LANGUAGE_EDIT_MESSAGE_LANG_RESET).replace("%lang%", l.LanguageName));
 				return true;

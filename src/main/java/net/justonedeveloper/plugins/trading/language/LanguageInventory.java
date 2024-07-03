@@ -285,7 +285,7 @@ public class LanguageInventory implements Listener {
 			Language.ReInit();
 
 			// Refresh all views for all players who currently have it open.
-			result.reopen();
+			if (result != null) result.reopen();
 			return;
 		}
 		

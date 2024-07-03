@@ -15,7 +15,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -52,13 +51,6 @@ public class TradeSettings implements Listener {
 			saveFile(f, cfg, "Failed to save user data file for player " + playername + " (UUID: " + playername + ")");
 		}
 		return cfg;
-	}
-
-	@EventHandler
-	public void debug(PlayerMoveEvent e) {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			e.getPlayer().sendMessage(p.getName() + " : " + String.valueOf(p.getOpenInventory().getTitle()) + " + " + p.getOpenInventory().getBottomInventory() + " + " + p.getOpenInventory().getTopInventory());
-		}
 	}
 	
 	@EventHandler
