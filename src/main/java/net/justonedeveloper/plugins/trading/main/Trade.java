@@ -561,7 +561,6 @@ public class Trade {
 				ToggleTradeConfirm(uuidPlayer1);
 				p1.sendMessage(Language.get(p1, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF));
 				p2.sendMessage(Language.get(p2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
-				Bukkit.broadcastMessage("§c[DEBUG] §eCancelling trade because Player 1 (" + p1.getName() + ") XP was confirmed as §c" + confirmedXPPlayer1 + " §ebut was just calculated as §b" + XPCalc.pointsOf(p1)[0] + "§e, which is lower.");
 				return;
 			}
 			
@@ -569,7 +568,6 @@ public class Trade {
 				ToggleTradeConfirm(uuidPlayer2);
 				p2.sendMessage(Language.get(p2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF));
 				p1.sendMessage(Language.get(p1, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
-				Bukkit.broadcastMessage("§c[DEBUG] §eCancelling trade because Player 2 (" + p2.getName() + ") XP was confirmed as §c" + confirmedXPPlayer2 + " §ebut was just calculated as §b" + XPCalc.pointsOf(p2)[0] + "§e, which is lower.");
 				return;
 			}
 			
