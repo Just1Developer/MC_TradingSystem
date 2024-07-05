@@ -20,8 +20,8 @@ public class Trade {
 	// I'll think of a smart way on how to do this
 	Inventory TradeInventoryPlayer1, TradeInventoryPlayer2;
 	UUID uuidPlayer1, uuidPlayer2;
-	int tradedXPPlayer1 = 0, tradedXPPlayer2 = 0;
-	int confirmedXPPlayer1 = 0, confirmedXPPlayer2 = 0;
+	int tradedXPPlayer1, tradedXPPlayer2;
+	int confirmedXPPlayer1, confirmedXPPlayer2;
 	int totalXPPlayer1, totalXPPlayer2;
 	int deltaLevelXPToNextLevelPlayer1, deltaLevelXPToNextLevelPlayer2;
 	int deltaLevelXPToPrevLevelPlayer1, deltaLevelXPToPrevLevelPlayer2;
@@ -40,6 +40,10 @@ public class Trade {
 	
 	public Trade(Player Player1, Player Player2)
 	{
+		tradedXPPlayer1 = 0;
+		tradedXPPlayer2 = 0;
+		confirmedXPPlayer1 = 0;
+		confirmedXPPlayer2 = 0;
 		uuidPlayer1 = Player1.getUniqueId();
 		uuidPlayer2 = Player2.getUniqueId();
 		TradeCommand.clearPendingTrades(uuidPlayer1);
@@ -223,6 +227,7 @@ public class Trade {
 	{
 		Inventory inv = getInventoryOf(p);
 		int xp = getTradedXPOf(p);
+		setPlayerExp(p);
 		int pxp = getTotalXPOf(p);
 		int resXP = pxp - xp;
 		int[] XPcalc = XPCalc.levelOf(resXP);
@@ -545,24 +550,26 @@ public class Trade {
 		ConfirmScheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(TradingMain.main, () -> {
 			
 			Player p1 = Bukkit.getPlayer(uuidPlayer1);
-			Player p2 = Bukkit.getPlayer(uuidPlayer1);
+			Player p2 = Bukkit.getPlayer(uuidPlayer2);
 			if (p1 == null || p2 == null) {
 				ToggleTradeConfirm(uuidPlayer1);
 				ToggleTradeConfirm(uuidPlayer2);
 				return;
 			}
 			
-			if (tradedXPPlayer1 < p1.getTotalExperience()) {
+			if (confirmedXPPlayer1 > 0 && confirmedXPPlayer1 > XPCalc.pointsOf(p1)[0]) {
 				ToggleTradeConfirm(uuidPlayer1);
 				p1.sendMessage(Language.get(p1, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF));
 				p2.sendMessage(Language.get(p2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
+				Bukkit.broadcastMessage("§c[DEBUG] §eCancelling trade because Player 1 (" + p1.getName() + ") XP was confirmed as §c" + confirmedXPPlayer1 + " §ebut was just calculated as §b" + XPCalc.pointsOf(p1)[0] + "§e, which is lower.");
 				return;
 			}
 			
-			if (tradedXPPlayer2 < p2.getTotalExperience()) {
+			if (confirmedXPPlayer2 > 0 && confirmedXPPlayer2 > XPCalc.pointsOf(p2)[0]) {
 				ToggleTradeConfirm(uuidPlayer2);
 				p2.sendMessage(Language.get(p2, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_SELF));
 				p1.sendMessage(Language.get(p1, Phrase.XP_TRADING_XP_CHANGED_TO_TOO_LOW_OTHER));
+				Bukkit.broadcastMessage("§c[DEBUG] §eCancelling trade because Player 2 (" + p2.getName() + ") XP was confirmed as §c" + confirmedXPPlayer2 + " §ebut was just calculated as §b" + XPCalc.pointsOf(p2)[0] + "§e, which is lower.");
 				return;
 			}
 			

@@ -28,6 +28,8 @@ public class TradeInventoryEventHandler implements Listener {
 	}
 	
 	public static HashMap<UUID, Trade> Trades = new HashMap<>();
+	public static HashMap<UUID, Long> clickSleep = new HashMap<>();
+	private static final int TIMEOUT = 150;
 	
 	@EventHandler
 	public void OnInventoryClick(InventoryClickEvent e)
@@ -37,6 +39,14 @@ public class TradeInventoryEventHandler implements Listener {
 		
 		Player p  = (Player) e.getWhoClicked();
 		UUID uuid = p.getUniqueId();
+
+		long lastTime = clickSleep.getOrDefault(uuid, 0L);
+		if (System.currentTimeMillis() < lastTime) {
+			e.setCancelled(true);
+			return;
+		}
+		clickSleep.put(uuid, System.currentTimeMillis() + TIMEOUT);
+
 		Trade trade = Trades.get(uuid);
 		int slot = e.getRawSlot();
 		int row = slot / 9;
